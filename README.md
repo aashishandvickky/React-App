@@ -7,6 +7,17 @@ heavily commented source and a `NOTES.md` (theory + interview questions) sitting
 **No backend, no database.** All data comes from JSON files (`src/data/`, `public/data/`)
 — clone it anywhere and it runs.
 
+> ## 🆕 Completely new? Your first 15 minutes
+>
+> 1. **Get it running** — follow the [step-by-step setup below](#-first-time-here-how-to-open-the-app-in-your-browser-step-by-step)
+>    (installs Node.js if needed, then `npm install` + `npm run dev`).
+> 2. **Open http://localhost:5173** — the app greets you with a **"00 · 👋 Start Here"**
+>    page that explains how to learn with it. Read that page.
+> 3. **Then open [`docs/START_HERE.md`](docs/START_HERE.md)** — your study plan.
+>    Everything else (glossary, exercises, debugging help) is linked from there.
+>
+> That's it. The app guides you from that point on.
+
 ## Quick start
 
 ```bash

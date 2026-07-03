@@ -1,5 +1,10 @@
 # 15 · Data Fetching
 
+> 🧭 **New here?** Best order: ① play with this concept's page in the running app,
+> ② read the `.jsx` file in this folder (start with its 📖 Beginner's Map at the top),
+> ③ then come back here — this file is the theory + interview layer. Confusing words →
+> [`docs/GLOSSARY.md`](../../../docs/GLOSSARY.md) · exercises → [`docs/EXERCISES.md`](../../../docs/EXERCISES.md)
+
 ## The canonical useEffect fetch (memorize the shape)
 ```js
 useEffect(() => {

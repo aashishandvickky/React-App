@@ -1,5 +1,10 @@
 # 19 · ★ Capstone — Rewards Store
 
+> 🧭 **New here?** Best order: ① play with this concept's page in the running app,
+> ② read the `.jsx` file in this folder (start with its 📖 Beginner's Map at the top),
+> ③ then come back here — this file is the theory + interview layer. Confusing words →
+> [`docs/GLOSSARY.md`](../../../docs/GLOSSARY.md) · exercises → [`docs/EXERCISES.md`](../../../docs/EXERCISES.md)
+
 A small but realistic feature that composes almost every previous concept. Use it two ways:
 1. **Read it** top to bottom and identify each concept (they're labeled in comments).
 2. **Extend it** with the exercises at the bottom of the page — that's where learning sticks.

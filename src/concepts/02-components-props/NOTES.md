@@ -1,5 +1,10 @@
 # 02 · Components & Props
 
+> 🧭 **New here?** Best order: ① play with this concept's page in the running app,
+> ② read the `.jsx` file in this folder (start with its 📖 Beginner's Map at the top),
+> ③ then come back here — this file is the theory + interview layer. Confusing words →
+> [`docs/GLOSSARY.md`](../../../docs/GLOSSARY.md) · exercises → [`docs/EXERCISES.md`](../../../docs/EXERCISES.md)
+
 ## Mental model
 A React component is **a function that takes props and returns elements**. It re-runs
 (re-renders) whenever its state changes or its parent re-renders. There is no change

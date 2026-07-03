@@ -40,7 +40,8 @@ npm run build    # production build; each concept becomes its own lazy chunk
   router → Redux Toolkit → data fetching → error boundaries → portals → concurrent →
   capstone (Rewards Store composing everything; on-page exercises)
 - `src/concepts/14-redux-toolkit/store.js` — the Redux store (provided app-wide in main.jsx)
-- `docs/` — beginner layer (easy language, keep it that way): START_HERE (guided
+- `docs/` — README is the index/reading order. Beginner layer (easy language, keep
+  it that way): START_HERE (guided
   path), HOW_THE_APP_WORKS (runtime tour), BUILD_A_FEATURE (ticket-style Members-page
   exercise; expects folder `src/concepts/20-members/`), GLOSSARY, EXERCISES (2-3
   tasks per concept), DEBUGGING (errors, DevTools). Reference layer:

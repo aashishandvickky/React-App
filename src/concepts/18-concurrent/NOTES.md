@@ -1,5 +1,10 @@
 # 18 · Concurrent Features (React 18+)
 
+> 🧭 **New here?** Best order: ① play with this concept's page in the running app,
+> ② read the `.jsx` file in this folder (start with its 📖 Beginner's Map at the top),
+> ③ then come back here — this file is the theory + interview layer. Confusing words →
+> [`docs/GLOSSARY.md`](../../../docs/GLOSSARY.md) · exercises → [`docs/EXERCISES.md`](../../../docs/EXERCISES.md)
+
 ## The big idea
 The concurrent renderer can **pause, resume, and abandon** renders. Updates get
 priorities: urgent (typing, clicks — must feel instant) vs non-urgent *transitions*

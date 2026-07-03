@@ -1,5 +1,10 @@
 # 11 · Custom Hooks
 
+> 🧭 **New here?** Best order: ① play with this concept's page in the running app,
+> ② read the `.jsx` file in this folder (start with its 📖 Beginner's Map at the top),
+> ③ then come back here — this file is the theory + interview layer. Confusing words →
+> [`docs/GLOSSARY.md`](../../../docs/GLOSSARY.md) · exercises → [`docs/EXERCISES.md`](../../../docs/EXERCISES.md)
+
 ## What they are
 A function whose name starts with `use` and that calls other hooks. That's it — no API,
 no registration. The naming convention matters: it tells the linter (and readers) that the
