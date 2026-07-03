@@ -47,5 +47,7 @@ npm run build    # production build; each concept becomes its own lazy chunk
 
 Built 2026-07-03; build + all tests verified. Git initialized (first commit `ba84d2b`),
 no remote yet. Natural next work: capstone exercises (listed on the capstone page),
-convert one module to TypeScript, add TanStack Query as concept 20, or run mock
-interviews from `docs/INTERVIEW_QUESTIONS.md`.
+convert one module to TypeScript, add TanStack Query as concept 20, run mock
+interviews from `docs/INTERVIEW_QUESTIONS.md`, or rebuild the capstone as a separate
+Next.js app (planned exercise — see `docs/ECOSYSTEM_AND_BEYOND.md`; this repo itself
+deliberately stays a Vite SPA).

@@ -13,6 +13,34 @@ loaders/actions), **Astro** (content sites, islands), **Expo/React Native** (mob
 One-liner: "Vite SPA for internal tools/dashboards; Next.js when SEO, streaming SSR, or
 server components matter."
 
+### 📝 Planned exercise: rebuild the capstone in Next.js
+
+Deliberately NOT done in this repo — this codebase stays a plain Vite SPA so the React
+fundamentals stay front and center. Once concepts 01–19 feel comfortable, rebuild the
+capstone Rewards Store (concept 19) as a separate sibling project:
+
+```bash
+npx create-next-app@latest rewards-store-next   # App Router, JS, no Tailwind
+```
+
+Port the capstone feature over and note what changes — that diff IS the lesson:
+
+1. **Routing**: React Router routes (concept 13) → `app/` folder structure; `<Link>`,
+   `useParams` → Next equivalents; the router config file disappears.
+2. **Server vs client**: everything here is a Client Component. Start with server
+   components by default and add `"use client"` only where hooks/interactivity live —
+   the boundary decision is the core Next.js skill.
+3. **Data fetching**: the `useEffect` + AbortController pattern (concept 15) → `async`
+   server components / `fetch` with built-in caching; keep one client-side fetch to
+   compare.
+4. **Redux**: the store must be created per-request and provided in a client component —
+   notice how much of the capstone state can just live on the server instead.
+5. **Lazy loading**: per-route code-splitting comes for free instead of `React.lazy`.
+
+Interview payoff: "I built the same feature as a Vite SPA and as a Next.js app" +
+concretely naming what moved to the server. Compare the rendering-strategies table below
+before and after.
+
 ### Rendering strategies
 | | HTML produced | When |
 |---|---|---|
