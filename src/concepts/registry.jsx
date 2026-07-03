@@ -20,6 +20,8 @@ import { lazy } from 'react';
  * must be rendered inside a <Suspense> boundary (see App.jsx).
  */
 export const CONCEPTS = [
+  // 00 is first on purpose: "/" redirects to CONCEPTS[0], so this is the landing page.
+  { path: '/00-welcome',           title: '00 · 👋 Start Here',            Component: lazy(() => import('./00-welcome/Welcome.jsx')) },
   { path: '/01-jsx-basics',        title: '01 · JSX Basics',               Component: lazy(() => import('./01-jsx-basics/JsxBasics.jsx')) },
   { path: '/02-components-props',  title: '02 · Components & Props',       Component: lazy(() => import('./02-components-props/ComponentsProps.jsx')) },
   { path: '/03-state-events',      title: '03 · State & Events',           Component: lazy(() => import('./03-state-events/StateAndEvents.jsx')) },

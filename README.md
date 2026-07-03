@@ -150,6 +150,9 @@ Start with the beginner-friendly four:
 - **BUILD_A_FEATURE.md** — build a complete new page yourself, end to end, like a
   real work ticket
 - **GLOSSARY.md** — every confusing term explained in easy language
+- **EXERCISES.md** — 2–3 small hands-on tasks for every concept
+- **DEBUGGING.md** — how to read React errors, use React DevTools, and fix the
+  classic beginner crashes
 
 Then the deeper references:
 

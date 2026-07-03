@@ -27,10 +27,11 @@ Repeat this loop for every concept. Budget 30–60 minutes per concept, one or t
 3. **Read the NOTES.md** in the same folder for the theory and the "why".
 4. **Break it.** Change something and watch the browser hot-reload. Delete a `key` prop.
    Remove a dependency from a `useEffect` array. Mutate state directly instead of using
-   the setter. Seeing things break teaches more than seeing them work.
-5. **Rebuild a piece from scratch.** Close the file and re-create the core of the demo
-   yourself in the same file (e.g., write your own counter under the existing one). Undo
-   with git when done: `git checkout -- src/`.
+   the setter. Seeing things break teaches more than seeing them work. When it breaks in
+   a way you don't understand → [`DEBUGGING.md`](DEBUGGING.md).
+5. **Do the concept's mini-exercises** from [`EXERCISES.md`](EXERCISES.md) — 2–3 small
+   typing tasks per concept. Undo experiments with git when done:
+   `git checkout -- src/`.
 
 If a term confuses you at any point → look it up in [`GLOSSARY.md`](GLOSSARY.md).
 
@@ -89,6 +90,8 @@ is there when a real interview approaches.
 | Know what to study next | this file |
 | Understand how the project's files fit together | `docs/HOW_THE_APP_WORKS.md` |
 | Look up a confusing word | `docs/GLOSSARY.md` |
+| Practice a concept I just studied | `docs/EXERCISES.md` |
+| Fix something I broke | `docs/DEBUGGING.md` |
 | Build something myself, guided | `docs/BUILD_A_FEATURE.md` |
 | Translate my Angular knowledge | `docs/ANGULAR_TO_REACT.md` |
 | Quick hook syntax reminder | `docs/HOOKS_CHEATSHEET.md` |

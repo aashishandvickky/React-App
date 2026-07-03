@@ -34,14 +34,16 @@ npm run build    # production build; each concept becomes its own lazy chunk
 
 - `src/main.jsx` — createRoot + StrictMode + Redux Provider + BrowserRouter
 - `src/App.jsx` — sidebar shell, lazy routes under Suspense
-- `src/concepts/01…19` — the syllabus: JSX → props → state → lists/keys → forms →
+- `src/concepts/00…19` — 00 is an in-app "Start Here" onboarding page (the landing
+  route); then the syllabus: JSX → props → state → lists/keys → forms →
   effects → refs → context → reducer → memoization → custom hooks → performance →
   router → Redux Toolkit → data fetching → error boundaries → portals → concurrent →
   capstone (Rewards Store composing everything; on-page exercises)
 - `src/concepts/14-redux-toolkit/store.js` — the Redux store (provided app-wide in main.jsx)
 - `docs/` — beginner layer (easy language, keep it that way): START_HERE (guided
   path), HOW_THE_APP_WORKS (runtime tour), BUILD_A_FEATURE (ticket-style Members-page
-  exercise; expects folder `src/concepts/20-members/`), GLOSSARY. Reference layer:
+  exercise; expects folder `src/concepts/20-members/`), GLOSSARY, EXERCISES (2-3
+  tasks per concept), DEBUGGING (errors, DevTools). Reference layer:
   ANGULAR_TO_REACT, INTERVIEW_QUESTIONS (52 Q&A + 10 coding challenges),
   HOOKS_CHEATSHEET, RENDERING_AND_RECONCILIATION, TESTING, TYPESCRIPT_WITH_REACT,
   ECOSYSTEM_AND_BEYOND
