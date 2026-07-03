@@ -6,8 +6,9 @@
    profile you update without mutating it, and a live log of input/click events.
 
    WHAT'S IN THIS FILE, TOP TO BOTTOM
-   ① Counter         — number state; proves updates are batched and each
-      render "sees" its own snapshot of state (exported so tests can use it)
+   ① Counter         — number state; proves updates are batched (grouped into
+      one re-render) and each render "sees" its own snapshot (frozen copy) of
+      state (exported so tests can use it)
    ② ObjectStateDemo — object/array state; update by COPYING, never mutating
    ③ EventsDemo      — camelCase event props and React's SyntheticEvent
    ④ The page component — just stacks the three cards above
@@ -34,13 +35,15 @@ import { useState } from 'react';
 // Exported separately so Counter.test.jsx can test it in isolation.
 export function Counter() {
   // useState returns [currentValue, setterFunction].
-  // Calling the setter SCHEDULES a re-render; it does NOT mutate `count`.
+  // Calling the setter SCHEDULES a re-render — React re-runs this function soon;
+  // it does NOT change (mutate) `count` in place.
   const [count, setCount] = useState(0);
 
   // An arrow function stored in a const — the handler for the "broken +3" button.
   const brokenAddThree = () => {
-    // ❌ CLASSIC INTERVIEW TRAP: all three read the SAME `count` from this
-    // render's closure. If count is 0, this is setCount(1) three times → 1.
+    // ❌ CLASSIC INTERVIEW TRAP: all three read the SAME `count` — this handler is a
+    // closure (it remembers the variables from the render that created it).
+    // If count is 0, this is setCount(1) three times → 1.
     setCount(count + 1);
     setCount(count + 1);
     setCount(count + 1);
@@ -78,8 +81,9 @@ export function Counter() {
 
 // ─── ② ObjectStateDemo — object/array state, updated immutably ───
 function ObjectStateDemo() {
-  // State can be any value. RULE: never MUTATE it — always create a new
-  // object/array. React compares by reference (Object.is) to decide to re-render.
+  // State can be any value. RULE: never MUTATE it (change it in place) — always create
+  // a NEW object/array. React only asks "is it the same object?" (Object.is) to decide
+  // whether to re-render, so a change made in place can go unnoticed.
   const [profile, setProfile] = useState({ name: 'Ashish', points: 100, tags: ['angular'] });
 
   const earnPoints = () =>

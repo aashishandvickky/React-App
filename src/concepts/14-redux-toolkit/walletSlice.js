@@ -6,7 +6,8 @@
    (WalletPanel/HistoryPanel dispatch and select from it).
    Why it exists: one self-contained file per feature is the RTK way.
    How: createSlice turns the reducers object into action creators and
-   a reducer; Immer makes the "mutating" code produce immutable state.
+   a reducer; Immer (a library RTK bundles) turns the "mutating" code
+   into safe immutable updates — new state object, old one untouched.
    ───────────────────────────────────────────────────────────────────── */
 
 /**
@@ -28,7 +29,7 @@ const walletSlice = createSlice({
     // state. Only inside createSlice/createReducer is this legal!
     // (earned(state, action) {…} is shorthand for earned: function (state, action) {…}.)
     earned(state, action) {
-      state.points += action.payload; // action.payload = the value passed to earned(n)
+      state.points += action.payload; // payload (the data an action carries) = the value passed to earned(n)
       state.history.push({ type: 'earn', amount: action.payload });
     },
     redeemed(state, action) {
@@ -49,9 +50,11 @@ const walletSlice = createSlice({
 // Object destructuring + named exports in one line — components import { earned } etc.
 export const { earned, redeemed, reset } = walletSlice.actions;
 
-// SELECTORS — keep state-shape knowledge here, not in components.
+// SELECTORS (small functions that read one value out of state) — keep the knowledge of
+// the state's shape here, not in components.
 // Interview: these return a stored primitive/reference, so useSelector's === check skips
-// re-renders. A selector that BUILDS a new object/array would re-render on every dispatch.
+// re-renders. A selector that BUILDS a new object/array returns a NEW reference each call,
+// so === always says "changed" → the component would re-render on every dispatch.
 export const selectPoints = (state) => state.wallet.points;
 export const selectHistory = (state) => state.wallet.history;
 

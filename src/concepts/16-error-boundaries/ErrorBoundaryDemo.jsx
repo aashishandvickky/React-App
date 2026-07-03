@@ -24,8 +24,8 @@
      this.setState (merges!), and a render() method that returns JSX.
    • static getDerivedStateFromError — called when a child throws during
      render; returns new state that switches on the fallback UI.
-   • componentDidCatch — called after the error commits; the place to
-     log to Sentry/Datadog (side effects allowed here).
+   • componentDidCatch — called after React has put the fallback on
+     screen; the place to log to Sentry/Datadog (side effects allowed here).
    • useState — powers the two small function-component widgets.
    • try/catch — the correct tool for event-handler errors (③).
      (Angular analogy: a scoped, declarative ErrorHandler for one
@@ -67,15 +67,16 @@ class ErrorBoundary extends Component {
     return { error }; // shorthand for { error: error }; React merges it into this.state
   }
 
-  // Called after the error is committed → side effects OK.
-  // This is where you'd send the error to Sentry/Datadog.
+  // Called after "commit" (React has updated the real DOM, fallback is on
+  // screen) → side effects OK. This is where you'd send the error to Sentry/Datadog.
   componentDidCatch(error, info) {
     // info.componentStack lists the component chain that was rendering when it threw.
     console.error('[ErrorBoundary] caught:', error.message, info.componentStack);
   }
 
-  // Class field + arrow function: assigning an arrow keeps `this` bound to the instance,
-  // so no `.bind(this)` in the constructor (a classic class-component gotcha).
+  // Class field (a property declared directly in the class body) holding an arrow function:
+  // the arrow keeps `this` bound to the instance, so no `.bind(this)` in the constructor
+  // (a classic class-component gotcha).
   // Note: this.setState MERGES the object into state; useState setters REPLACE the value.
   handleRetry = () => this.setState({ error: null });
 

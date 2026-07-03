@@ -62,8 +62,8 @@ function ConditionalPatterns() {
       {status === 'ready' && (
         <ul>
           {/* key={t.id} — a stable id from the data. Interview: React matches list items by
-              key during reconciliation; index keys break on reorder (proof in the next card).
-              The ternary picks the emoji per row. */}
+              key during reconciliation (its diff of the old vs new UI tree); index keys
+              break on reorder (proof in the next card). The ternary picks the emoji per row. */}
           {items.map((t) => (
             <li key={t.id}>{t.done ? '✅' : '⬜️'} {t.text}</li>
           ))}
@@ -91,7 +91,8 @@ function KeysDemo() {
   const [useIndexKeys, setUseIndexKeys] = useState(true);
 
   // Arrow fn + functional update: setRows gets the CURRENT array (r) and must return a NEW one.
-  // `[newRow, ...r]` spreads the old rows AFTER the new row — an immutable prepend (no push!).
+  // `[newRow, ...r]` — the spread `...r` copies the old rows into the new array, after newRow.
+  // "Immutable" = never edit the old array (no push!) — React only notices a NEW array.
   // Date.now() = a cheap unique id; the template literal `Row ${…}` builds "Row C", "Row D", …
   const prepend = () =>
     setRows((r) => [{ id: Date.now(), label: `Row ${String.fromCharCode(65 + r.length)}` }, ...r]);

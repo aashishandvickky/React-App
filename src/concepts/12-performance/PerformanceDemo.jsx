@@ -43,7 +43,7 @@
 import { Suspense, lazy, useMemo, useState } from 'react';
 
 // ─── ① Code splitting with lazy + Suspense ───
-// This chart component is in its own chunk; it downloads only when rendered.
+// This chart lives in its own chunk (a separate JS file); it downloads only when first rendered.
 // (Every sidebar page in this app is ALSO lazy — see registry.jsx.)
 // import(...) is a DYNAMIC import — a function call returning a Promise of the module.
 // lazy() wraps that Promise-maker into a component React can download on first render.
@@ -72,9 +72,9 @@ function CodeSplittingDemo() {
   );
 }
 
-// ─── ② Windowing / virtualization (hand-rolled mini version) ───
-// Real apps use react-window / @tanstack/react-virtual — but interviewers
-// love asking HOW it works: render only the rows inside the viewport.
+// ─── ② Windowing / virtualization (mini version, built by hand — no library) ───
+// Real apps use react-window / @tanstack/react-virtual — but interviewers love
+// asking HOW it works: render ONLY the rows inside the viewport (the visible scroll area).
 function VirtualListDemo() {
   const ROW_HEIGHT = 28; // px per row — a fixed height keeps the math trivial
   const VIEWPORT = 280;  // px height of the scroll box
@@ -92,7 +92,7 @@ function VirtualListDemo() {
 
   // The whole trick: from scroll position, compute the visible slice…
   const start = Math.floor(scrollTop / ROW_HEIGHT); // index of the first row in view
-  const visibleCount = Math.ceil(VIEWPORT / ROW_HEIGHT) + 2; // +overscan
+  const visibleCount = Math.ceil(VIEWPORT / ROW_HEIGHT) + 2; // +2 "overscan" spare rows: no gap on fast scroll
   const visible = rows.slice(start, start + visibleCount); // ~12 rows — the only ones rendered
 
   return (
@@ -104,7 +104,7 @@ function VirtualListDemo() {
         style={{ height: VIEWPORT, overflowY: 'auto', border: '1px solid var(--border)' }}
         onScroll={(e) => setScrollTop(e.currentTarget.scrollTop)}
       >
-        {/* Spacer div gives the scrollbar the full height… */}
+        {/* Spacer div is 10,000 rows tall, so the scrollbar behaves as if every row existed… */}
         <div style={{ height: TOTAL * ROW_HEIGHT, position: 'relative' }}>
           {/* …and we absolutely position only the visible rows inside it. */}
           {/* key = start + i, the ABSOLUTE row index — stable per data row, unlike plain i. */}

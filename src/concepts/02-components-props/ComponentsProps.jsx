@@ -26,14 +26,14 @@
    below (①, ②, …) matches one function or card. Read NOTES.md in this
    folder for the theory. Confused by a word? → docs/GLOSSARY.md
    ═══════════════════════════════════════════════════════════════════════ */
-// Named import ({ } destructures the module's exports) of the useState hook.
+// Named import of the useState hook — { } picks one export out of the module (destructuring).
 import { useState } from 'react';
 // Vite imports JSON directly — `members` is a plain JS array, baked in at build time.
 import members from '../../data/members.json';
 
 // ─── ① MemberBadge — a child receiving plain props (like @Input) ───
-// Props arrive as ONE object; destructuring in the signature is idiomatic.
-// Default values use JS default-parameter syntax.
+// Props arrive as ONE object; destructuring it in the signature is the normal React style.
+// `tier = 'Base'` is a JS default value — used when the parent doesn't pass that prop.
 function MemberBadge({ name, tier = 'Base', points }) {
   return (
     // className = CSS class (JSX name for the reserved word `class`). style={{ … }}:
@@ -72,7 +72,7 @@ function TierPicker({ tiers, selected, onSelect }) {
 
 // ─── ③ Panel — a child that renders whatever you nest inside it (children) ───
 // Whatever you nest between <Panel>…</Panel> arrives as props.children.
-// This is the composition primitive that replaces content projection.
+// This is React's basic tool for nesting content — it replaces Angular's content projection.
 function Panel({ title, children }) {
   return (
     <div className="card">
@@ -86,9 +86,10 @@ function Panel({ title, children }) {
 // ─── ④ The parent — owns the state, derives the visible members ───
 export default function ComponentsProps() {
   // useState('Gold') returns a PAIR [currentValue, setterFn], grabbed with array
-  // destructuring; 'Gold' is the initial value. Calling setSelectedTier(...) schedules
-  // a re-render. Interview: the setter is async/batched — `selectedTier` keeps its
-  // old value until the next render runs this function again.
+  // destructuring; 'Gold' is the initial value. Calling setSelectedTier(...) schedules a
+  // re-render (React updates the screen a moment later, not instantly).
+  // Interview: the setter is async/batched (updates are grouped) — `selectedTier`
+  // keeps its old value until the next render runs this function again.
   const [selectedTier, setSelectedTier] = useState('Gold');
 
   // Derived data — computed during render, NOT stored in state.

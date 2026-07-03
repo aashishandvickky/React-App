@@ -25,14 +25,14 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 // JSX is NOT HTML. It compiles to function calls: <h2 id="x">hi</h2>
-// becomes jsx('h2', { id: 'x', children: 'hi' }). Because it's just
-// JavaScript expressions, you can assign it to variables, return it,
-// pass it around — that's what makes composition possible.
+// becomes jsx('h2', { id: 'x', children: 'hi' }). Each JSX tag is a JS
+// EXPRESSION (code that produces a value), so you can assign it to
+// variables, return it, pass it around — that's what makes composition possible.
 // Also notice: NO `import React` line. Since React 17 the build tool injects the
 // jsx() import automatically (the "automatic runtime"). Interview: know why.
 export default function JsxBasics() {
   // ─── ① Plain JS data + a JSX snippet stored in a variable ───
-  // Plain JS above the return — runs on EVERY render.
+  // Plain JS above the return — runs on EVERY render (each time React re-calls this function).
   const student = { name: 'Ashish', background: 'Angular', years: 8 };
   const skills = ['Java', 'Angular', 'Spring', 'React (learning)'];
   const now = new Date().toLocaleTimeString(); // a plain string — new on every render
@@ -53,7 +53,7 @@ export default function JsxBasics() {
       <div className="card">
         {/* To DISPLAY literal braces, put them in a string: {'{ }'} renders as { }. */}
         <h3>Interpolation: {'{ }'} instead of {'{{ }}'}</h3>
-        {/* Anything inside { } is a JS EXPRESSION (no statements/if/for). */}
+        {/* Anything inside { } is a JS EXPRESSION — it must produce a value, so no if/for statements. */}
         {/* {' '} is an explicit space — JSX trims whitespace at line breaks. */}
         <p>
           Hello <strong>{student.name}</strong>, coming from{' '}

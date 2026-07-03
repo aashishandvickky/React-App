@@ -54,7 +54,7 @@ function SlowList({ query }) { // destructured prop: the search text the rows ec
     const out = [];
     for (let i = 0; i < 250; i++) {
       const t0 = performance.now(); // high-precision timestamp (ms)
-      // Busy-wait: spin until 1ms has passed — fakes expensive per-row render work.
+      // Busy-wait: loop doing nothing until 1ms has passed — fakes expensive per-row work.
       while (performance.now() - t0 < 1) { /* ~1ms per row = ~250ms total */ }
       // Template literal (backticks + ${…}); `query || '∅'` falls back to ∅ when empty.
       out.push(`${query || '∅'} — result ${i + 1}`);
@@ -71,7 +71,7 @@ function SlowList({ query }) { // destructured prop: the search text the rows ec
 }
 
 // ─── ② JankyDemo — the blocking version (feel the lag) ───
-/** WITHOUT concurrency: one state drives input + heavy list → typing janks. */
+/** WITHOUT concurrency: one state drives input + heavy list → typing lags ("jank"). */
 function JankyDemo() {
   const [text, setText] = useState(''); // ONE state feeds both input and list — the problem
   return (

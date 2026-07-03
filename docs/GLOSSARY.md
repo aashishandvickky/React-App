@@ -11,6 +11,9 @@ pause. Ordered roughly by when you'll first meet each word, grouped by topic.
   `package.json` (`npm run dev`, `npm test`).
 - **package.json** — the project's ID card: its name, the libraries it needs
   (`dependencies`), and its command shortcuts (`scripts`).
+- **semver** — the `major.minor.patch` version format libraries use (`19.1.0`). The `^`
+  in front of a version in package.json means "this version or any newer minor/patch".
+  Identical to how Angular repos version things.
 - **node_modules/** — the folder where npm puts downloaded libraries. Huge, never
   edited by hand, never committed to git. Deleted it by accident? `npm install`
   rebuilds it.
@@ -30,6 +33,29 @@ pause. Ordered roughly by when you'll first meet each word, grouped by topic.
 - **SPA (single-page application)** — an app that loads one HTML page and then redraws
   itself with JavaScript as you navigate. No full page reloads. This app (and most
   Angular apps) are SPAs.
+
+## JavaScript words the code leans on
+
+- **Destructuring** — unpacking values straight into variables:
+  `const { name } = props` or `const [count, setCount] = useState(0)`. Same idea as
+  in modern Angular/TypeScript code — React just uses it everywhere.
+- **Tuple** — a small fixed-size array where each position has a meaning. `useState`
+  returns one: position 0 is the value, position 1 is the setter.
+- **Spread (`...`)** — copies everything from an object or array into a new one:
+  `{ ...form, name: 'Ada' }` means "a fresh copy of form, with name changed". The
+  standard way to update state without mutating the original.
+- **Immutable / immutability** — never editing an object or array in place; always
+  making a changed copy instead (with spread, `map`, `filter` — not `push` or
+  `obj.x = …`). React and Redux rely on this to notice that something changed.
+- **Reference equality / stable reference** — JavaScript compares objects, arrays,
+  and functions by identity ("is it the *same* object?"), not by contents. React uses
+  that cheap check to decide what changed — which is why a brand-new copy counts as
+  "changed" and why `useMemo`/`useCallback` exist (to keep the *same* reference).
+- **Closure** — a function keeps access to the variables that existed where it was
+  created, even when it runs later. Every render creates fresh closures — the root of
+  the "stale closure" bug below.
+- **Pure function** — a function whose output depends only on its inputs, with no side
+  effects: same input, same output, touches nothing else. Reducers must be pure.
 
 ## Core React words
 
@@ -55,6 +81,9 @@ pause. Ordered roughly by when you'll first meet each word, grouped by topic.
   user does X, run this." Angular analogy: `(click)="..."`.
 - **Controlled input** — a form field whose value lives in React state (`value={q}`
   + `onChange`). React is the single source of truth for what's in the box.
+- **Uncontrolled input** — the opposite: the browser keeps the field's value and you
+  read it only when needed (usually via a ref). Less common; used for file inputs or
+  quick integrations.
 - **Key** — the `key={item.id}` prop on list items. Gives each item a stable identity
   so React can tell items apart across re-renders. Never use the array index for
   dynamic lists.
@@ -73,6 +102,11 @@ pause. Ordered roughly by when you'll first meet each word, grouped by topic.
   only when these values change". `[]` = run once after the first render.
 - **Stale closure** — a classic bug: a function "remembers" old state from the render
   it was created in. Concept 03's broken "+3" button demonstrates it.
+- **Functional update** — passing a function to a setter: `setCount(c => c + 1)`.
+  React hands you the *latest* value, so it works even when the surrounding code has
+  a stale closure. The standard fix for the "+3" bug.
+- **Lazy initializer** — passing a function to `useState(() => readLocalStorage())` so
+  the expensive setup runs once on mount, not on every render.
 - **StrictMode** — dev-only wrapper (see `src/main.jsx`) that runs renders and effects
   twice on purpose to expose bugs. The reason your `console.log` prints twice.
 - **Ref / `useRef`** — a small box (`ref.current`) that survives re-renders but does
@@ -90,15 +124,28 @@ pause. Ordered roughly by when you'll first meet each word, grouped by topic.
   filtered list). Compute it during render — do NOT store it in its own state.
 - **Custom hook** — your own `useSomething()` function combining built-in hooks, so
   logic can be reused across components. See `src/concepts/11-custom-hooks/`.
+- **Debounce / throttle** — ways to calm down rapid-fire events (like typing).
+  Debounce waits until the user pauses before acting; throttle acts at most once per
+  interval. Angular analogy: RxJS `debounceTime` — see `useDebouncedValue` in
+  concept 11.
 - **Lifting state up** — moving state to the closest shared parent when two components
   need the same data; it flows back down as props.
 - **Lazy loading / `lazy()` + `Suspense`** — download a component's code only on first
   use; `<Suspense fallback={…}>` shows a placeholder while it downloads.
+- **Virtualization (windowing)** — for huge lists, render only the rows currently
+  visible on screen (plus a few spares) instead of thousands of DOM nodes. Concept 12
+  hand-rolls a mini version; libraries: react-window, TanStack Virtual.
+- **AbortController** — the browser's "cancel this request" switch. Create one, pass
+  its signal to `fetch`, call `.abort()` in the effect cleanup — stops stale responses
+  from overwriting fresh ones. Angular analogy: unsubscribing from an HTTP observable.
 - **Error boundary** — a component that catches render-time crashes in its children
   and shows fallback UI instead of a blank page. The one thing still requiring a class
   component.
 - **Portal** — renders a component's HTML somewhere else in the document (e.g., modals
   at `<body>` level) while it stays a normal child in the React tree.
+- **Transition / `useTransition`** — marks a state update as "not urgent"
+  (`startTransition(() => setFilter(q))`), so React keeps the page responsive (e.g.,
+  typing stays instant) and renders the slow part when it can. Concept 18.
 
 ## Router & Redux words
 
@@ -110,10 +157,16 @@ pause. Ordered roughly by when you'll first meet each word, grouped by topic.
   components. This project's store: `src/concepts/14-redux-toolkit/store.js`.
 - **Slice** — Redux Toolkit's unit: one feature's piece of the store (its state + the
   reducers that change it), e.g. `walletSlice.js`.
+- **Immer** — the library hidden inside Redux Toolkit that lets slice reducers *look*
+  like they mutate (`state.items.push(x)`) while actually producing safe immutable
+  copies behind the scenes. Only works inside RTK reducers — nowhere else.
 - **Action / dispatch** — an action is a plain "something happened" object; `dispatch`
   sends it to the store, a reducer computes the new state.
 - **Selector / `useSelector`** — how a component reads a piece of the store — and
   subscribes: the component re-renders when that piece changes.
+- **Thunk / `createAsyncThunk`** — where async work (like fetching) lives in Redux;
+  reducers must stay pure, so the thunk does the fetch and dispatches
+  `pending/fulfilled/rejected` actions along the way. Angular analogy: NgRx effects.
 
 ## Testing words
 
@@ -123,6 +176,12 @@ pause. Ordered roughly by when you'll first meet each word, grouped by topic.
   Philosophy: test behavior, not implementation details.
 - **`getByRole` / `getByText` / `getByTestId`** — queries for finding elements, in
   order of preference (roles are what assistive tech sees; test IDs are last resort).
+- **Matcher** — the check at the end of an assertion: `expect(el).toBeInTheDocument()`,
+  `.toHaveTextContent('3')`. Same idea as Jasmine's `toEqual` family; the extra
+  DOM-flavored ones come from jest-dom (loaded in `src/setupTests.js`).
+- **Fake timers** — `vi.useFakeTimers()` replaces real clocks in a test so you can
+  jump time forward instantly (`advanceTimersByTime(300)`) instead of actually waiting
+  for a debounce or timeout.
 - **jsdom** — the fake in-memory browser tests run in. No real window opens.
 
 ## Words you'll hear in interviews (deeper docs cover these)

@@ -51,7 +51,7 @@ import {
 // Build-time JSON import — the stub member list; no server involved.
 import members from '../../data/members.json';
 
-// ─── ① Layout route: shared chrome + <Outlet> for children ───
+// ─── ① Layout route: shared frame (heading etc.) + <Outlet> for children ───
 function MembersLayout() {
   return (
     <div className="card">
@@ -71,7 +71,7 @@ function MemberList() {
   // Array destructuring, useState-style: [current params, setter that navigates].
   const [searchParams, setSearchParams] = useSearchParams();
   // searchParams is a URLSearchParams. ?? (nullish coalescing) falls back to 'all' only
-  // when .get() returns null (param absent) — unlike ||, it would keep '' or 0.
+  // when .get() returns null (param absent). Unlike ||, ?? would still keep a real '' or 0.
   const tierFilter = searchParams.get('tier') ?? 'all';
 
   // Derived on every render (not state): keep members matching the tier, or everyone.
@@ -94,7 +94,7 @@ function MemberList() {
       <ul>
         {visible.map((m) => (
           <li key={m.id}>
-            {/* Relative link → /13-router/members/M-1001 */}
+            {/* Relative link: m.id is added onto the current URL → /13-router/members/M-1001 */}
             <Link to={m.id}>{m.name}</Link> — {m.tier}
           </li>
         ))}

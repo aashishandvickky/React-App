@@ -53,8 +53,9 @@ import { fetchCatalog, selectCatalog } from './catalogSlice.js';
 // ─── ① Wallet panel — sync actions (earned / redeemed / reset) ───
 function WalletPanel() {
   // useSelector SUBSCRIBES this component to the store: it re-renders ONLY
-  // when the selected value changes (reference/strict equality) — this
-  // fine-grained subscription is Redux's perf edge over raw context.
+  // when the selected value changes (compared with ===). This fine-grained
+  // subscription is Redux's performance edge over plain context, which
+  // re-renders every consumer on any change.
   const points = useSelector(selectPoints);
   const dispatch = useDispatch(); // the store's dispatch function ≈ NgRx Store.dispatch
 

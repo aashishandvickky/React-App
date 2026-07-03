@@ -2,8 +2,9 @@
  * TESTING 101 — React Testing Library (RTL) + Vitest.
  *
  * RTL philosophy: test what the USER sees and does, not implementation
- * details (no reaching into state, no shallow rendering, no component
- * internals). If a refactor keeps behavior identical, tests should pass.
+ * details (no reaching into state, no "shallow rendering" — rendering a
+ * component without its children — no component internals). If a refactor
+ * keeps behavior identical, tests should pass.
  *
  * Angular analogy: TestBed + fixture, but you query by role/text like a
  * user would, and fire real-ish events with user-event.
@@ -24,7 +25,7 @@ import { Counter } from '../concepts/03-state-events/StateAndEvents.jsx';
 describe('Counter (concept 03)', () => {
   // `async` because user-event returns Promises we must await (see below).
   it('increments by one on click', async () => {
-    // ARRANGE: render into a jsdom document.
+    // ARRANGE: render into a jsdom document (jsdom = a fake browser DOM running in Node).
     // <Counter /> is JSX — no TestBed module setup needed; just render it.
     render(<Counter />);
     // user-event simulates full event sequences (pointer, focus, keyboard).
@@ -42,7 +43,7 @@ describe('Counter (concept 03)', () => {
     // ASSERT on what the user sees.
     // expect(...) is the assertion, same idea as Jasmine's expect.
     // getByTestId is the LAST-RESORT query (a data-testid hook) — fine for plain text spans.
-    // toHaveTextContent is a jest-dom matcher: checks the element's rendered text.
+    // toHaveTextContent is a jest-dom matcher (assertion helper): checks the rendered text.
     expect(screen.getByTestId('count')).toHaveTextContent('1');
   });
 
@@ -54,7 +55,9 @@ describe('Counter (concept 03)', () => {
 
     // All three setCount(count + 1) calls read the same snapshot → +1 total.
     // `name: /broken/i` is a REGEX match (i = case-insensitive) — handy for partial labels.
-    // Interview: state updates are batched; `count` in a handler is a stale closure snapshot.
+    // Interview: state updates are BATCHED (grouped into one re-render); the handler's
+    // `count` is a stale CLOSURE value — the function remembers the variables from the
+    // render that created it, so it still sees the old count.
     await user.click(screen.getByRole('button', { name: /broken/i }));
     // The test PROVES the bug: the display shows 1, not 3.
     expect(screen.getByTestId('count')).toHaveTextContent('1');

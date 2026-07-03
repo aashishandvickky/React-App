@@ -23,7 +23,8 @@
    • useState — holds the search term, results, and timing numbers.
    • useEffect — runs the fetch when `term` changes; its CLEANUP function
      aborts the previous request (this is the whole race-condition fix).
-   • AbortController — browser API to cancel an in-flight fetch; its
+   • AbortController — browser API to cancel an in-flight fetch (one
+     that started but hasn't finished yet); its
      `signal` is passed into fetch(). (Angular: like unsubscribing /
      switchMap cancelling the previous HTTP request.)
    • Promise.all — fires independent requests together instead of one
@@ -45,7 +46,7 @@
 import { useEffect, useState } from 'react';
 
 // ─── ① slowFetch — a fetch() with random delay ───
-// Simulated variable network latency so races are reproducible.
+// Fakes a variable network delay (latency), so the race is easy to reproduce on purpose.
 function slowFetch(url, signal) {
   const delay = 300 + Math.random() * 1200; // 300–1500ms, different for every request
   // Hand-built Promise: WE decide when it settles. resolve/reject are its two exit doors.
@@ -86,7 +87,8 @@ function RaceConditionDemo() {
     // Only pass the signal when the fix is ON, so you can observe the bug.
     const signal = fixEnabled ? controller.signal : undefined;
 
-    // .then chaining instead of async/await — an effect callback can't be async itself.
+    // .then chaining instead of async/await — an effect callback can't be async itself:
+    // React expects it to return a cleanup function, and async would return a Promise.
     // (No res.ok check here: static dev files can't 404; see catalogSlice.js for that pattern.)
     slowFetch('/data/search-index.json', signal)
       .then((res) => res.json()) // parse the JSON body — returns another Promise
@@ -149,7 +151,7 @@ function ParallelDemo() {
         fetch('/data/search-index.json').then((r) => r.json()),
       ]);
     } else {
-      // ❌ Sequential await = waterfall; total = sum of latencies.
+      // ❌ Sequential await = a "waterfall": request 2 waits for request 1; total = both delays added.
       posts = await fetch('/data/posts.json').then((r) => r.json());
       index = await fetch('/data/search-index.json').then((r) => r.json());
     }

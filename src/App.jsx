@@ -8,7 +8,7 @@
    docs/HOW_THE_APP_WORKS.md
    ───────────────────────────────────────────────────────────────────── */
 // { Suspense } is a NAMED import (curly braces pick one export out of the module).
-// Suspense renders a fallback UI while a lazy-loaded chunk is still downloading.
+// Suspense shows a placeholder while a lazy "chunk" (separately downloaded JS file) loads.
 import { Suspense } from 'react';
 // Router building blocks: Routes/Route declare the route table (Angular's Routes[] array),
 // NavLink is a link that knows when it is active (routerLink + routerLinkActive in one),
@@ -24,7 +24,8 @@ import { CONCEPTS } from './concepts/registry.jsx';
  * <Routes>/<Route> replace the Routes[] array; routes are declared in JSX.
  *
  * Every concept page is lazy-loaded (see registry.jsx), so this file also
- * demonstrates route-based CODE SPLITTING with <Suspense> as the fallback UI.
+ * demonstrates route-based CODE SPLITTING (each page's JS is a separate file,
+ * downloaded on demand) with <Suspense> as the fallback UI.
  */
 // A React component is just a function that returns JSX. `export default` lets
 // main.jsx import it as `import App from './App.jsx'` (no curly braces needed).
@@ -42,7 +43,8 @@ export default function App() {
           {/* .map() turns each registry entry into a <NavLink> — React's *ngFor.
               (c) => (...) is an arrow function: takes one concept, returns JSX. */}
           {CONCEPTS.map((c) => (
-            // KEY: stable identity for list items so React can reconcile efficiently.
+            // KEY: a stable identity per list item, so React can efficiently match old
+            // and new items on re-render (that matching is called "reconciliation").
             // Interview: keys must be stable + unique among siblings; using the array
             // index as key breaks state when items reorder. "to" = target URL (routerLink).
             <NavLink key={c.path} to={c.path}>

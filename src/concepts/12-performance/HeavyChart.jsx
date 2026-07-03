@@ -4,7 +4,7 @@
    stub product data, no chart library involved.
    Used by: PerformanceDemo.jsx (loaded on button click).
    Why it exists: to be code-split — imported via lazy(() =>
-   import('./HeavyChart.jsx')), so Vite puts it in a separate JS chunk.
+   import('./HeavyChart.jsx')), so Vite puts it in a separate JS chunk (file).
    How: the chunk downloads only the first time the component renders.
    ───────────────────────────────────────────────────────────────────── */
 // Build-time JSON import: Vite bundles this stub data INTO the chunk — no network request.

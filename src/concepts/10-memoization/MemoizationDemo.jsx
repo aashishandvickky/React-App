@@ -53,8 +53,9 @@ function expensiveTotal(items) {
 }
 
 // ─── ② ProductRow — a row wrapped in React.memo ───
-// React.memo: skips re-rendering when props are SHALLOW-EQUAL to last time.
-// ≈ OnPush change detection. Works only if props keep stable references!
+// React.memo: skips re-rendering when props are SHALLOW-EQUAL to last time
+// (each prop === the previous one). ≈ OnPush change detection. Works only if
+// props keep stable references (the same objects/functions every render)!
 // ({ product, onBuy }) destructures the props object; onBuy is a callback prop (≈ @Output).
 const ProductRow = memo(function ProductRow({ product, onBuy }) {
   return (
@@ -65,7 +66,7 @@ const ProductRow = memo(function ProductRow({ product, onBuy }) {
         {/* Inline arrow is fine HERE — it's inside the memoized child, not a prop passed to it. */}
         <button onClick={() => onBuy(product.id)}>Buy</button>
       </td>
-      {/* Re-render indicator: random suffix changes ONLY when this row renders. */}
+      {/* Re-render indicator: this timestamp updates ONLY when this row actually renders. */}
       <td className="muted">rendered @ {new Date().toLocaleTimeString()}</td>
     </tr>
   );
@@ -91,8 +92,9 @@ export default function MemoizationDemo() {
   // every render, so memo(ProductRow) sees "new prop" and re-renders anyway.
   // useCallback(fn, deps) === useMemo(() => fn, deps).
   const handleBuy = useCallback((id) => {
-    // Interview (stale closure): with [] deps, reading `bought` directly would see the FIRST
-    // render's array forever. The functional update (b) => … always receives the latest.
+    // Interview — stale closure (a function that still "sees" old state): with [] deps,
+    // reading `bought` directly would see the FIRST render's array forever. The functional
+    // update (b) => … always receives the latest.
     setBought((b) => [...b, id]); // functional update → no `bought` dep needed
   }, []);
 

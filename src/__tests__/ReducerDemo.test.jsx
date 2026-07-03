@@ -4,8 +4,8 @@
  * getByPlaceholderText > getByText > getByTestId (last resort).
  */
 // Destructured named imports from React Testing Library (RTL):
-// render() mounts the component into jsdom; screen queries the result
-// (Angular: TestBed.createComponent + fixture.debugElement queries).
+// render() mounts the component into jsdom (a fake browser DOM running in Node);
+// screen queries the result (Angular: TestBed.createComponent + fixture.debugElement).
 import { render, screen } from '@testing-library/react';
 // Default import — the realistic user-interaction simulator (typing, clicking...).
 import userEvent from '@testing-library/user-event';
@@ -33,12 +33,13 @@ describe('ReducerDemo todo list (concept 09)', () => {
     // The new item is rendered; queryBy* returns null instead of throwing —
     // use it for "does NOT exist" assertions.
     // getByText (used here) THROWS if missing, which gives a helpful failure message.
-    // toBeInTheDocument is a jest-dom matcher: "this element exists in the DOM".
+    // toBeInTheDocument is a jest-dom matcher (assertion helper): "this element exists".
     expect(screen.getByText('Learn testing')).toBeInTheDocument();
   });
 
   it('toggling a todo strikes it through and updates the remaining count', async () => {
-    // Each `it` re-mounts fresh — no shared state leaks between tests.
+    // Each `it` re-mounts fresh — RTL auto-unmounts after every test (afterEach
+    // cleanup), so no state leaks from one test into the next.
     render(<ReducerDemo />);
     const user = userEvent.setup();
 

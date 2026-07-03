@@ -28,7 +28,8 @@
    • useMemo      — keeps the provider's value object reference-stable so
      consumers don't re-render on every provider render.
    Angular analogy: a DI-provided service visible to one subtree — this
-   whole file solves PROP DRILLING.
+   whole file solves PROP DRILLING (passing a prop down through layers
+   that don't use it, only forward it).
 
    HOW TO READ THIS FILE
    Open the page in the browser next to this file. Each numbered marker
@@ -45,7 +46,7 @@ const ThemeContext = createContext(null); // null = "no provider above" — the 
 
 // ─── ② ThemeProvider — own the state, broadcast it downward ───
 // 2) PROVIDE — a wrapper component owning the state + exposing an API.
-//    This "provider component" pattern is the idiomatic mini state manager.
+//    This "provider component" pattern is the usual React way to build a mini state manager.
 // { children } destructures the children prop — whatever JSX gets nested inside <ThemeProvider>.
 // Angular analogy: <ng-content>. The provider adds no UI of its own, it just wraps.
 function ThemeProvider({ children }) {
@@ -55,9 +56,10 @@ function ThemeProvider({ children }) {
   const toggle = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
 
   // ⚠️ PERF: value={{ theme, toggle }} inline creates a NEW object every
-  // render → every consumer re-renders every time. useMemo keeps the
-  // reference stable until `theme` actually changes.
-  // Interview: consumers compare `value` by REFERENCE — a new object means "changed".
+  // render → every consumer re-renders every time. useMemo keeps the reference
+  // stable (hands back the SAME object) until `theme` actually changes.
+  // Interview: consumers compare `value` by REFERENCE (same object in memory?) —
+  // any new object counts as "changed".
   // Syntax note: () => ({ … }) — the extra parens make the arrow RETURN an object literal.
   const value = useMemo(() => ({ theme, toggle }), [theme]);
 

@@ -21,7 +21,8 @@
      Redux/NgRx but local to one component — the stepping stone to
      concept 14 (Redux Toolkit).
    • dispatch   — sends an action OBJECT describing "what happened";
-     the reducer decides how state changes. Its identity never changes.
+     the reducer decides how state changes. Its identity never changes
+     (dispatch is the same function object on every render).
    • JSON stub data — initialTodos imported from src/data/todos.json
      (this app has no backend by design).
 
@@ -35,8 +36,9 @@ import { useReducer } from 'react'; // the only React API this file needs
 import initialTodos from '../../data/todos.json';
 
 // ─── ① todosReducer — all update logic in one pure function ───
-// The REDUCER: (state, action) -> newState. MUST be pure:
-// no mutation, no side effects, no Date.now()/random inside.
+// The REDUCER: (state, action) -> newState. MUST be pure (same inputs →
+// same output, touches nothing outside itself): never mutate (edit) the
+// old state — return a new one; no side effects, no Date.now()/random.
 // All update logic lives here — testable without rendering anything.
 function todosReducer(state, action) {
   // switch on the action's type string — one case per kind of "thing that happened".
@@ -72,11 +74,11 @@ export default function ReducerDemo() {
   // Submit handler, written as an arrow function stored in a const (the usual React style).
   const handleAdd = (e) => {
     e.preventDefault(); // stop the browser's full-page form POST
-    const input = e.target.elements.newTodo; // uncontrolled, read on submit
+    const input = e.target.elements.newTodo; // uncontrolled — the DOM holds the value; read on submit
     // .trim() strips whitespace; an empty string is falsy → ignore blank submits.
     if (!input.value.trim()) return;
-    // Interview: Date.now() inside the reducer would break its purity — so the impure bit
-    // (minting an id) happens HERE in the handler and travels inside the action object.
+    // Interview: Date.now() inside the reducer would break its purity — so the impure part
+    // (creating the id) happens HERE in the handler and travels inside the action object.
     dispatch({ type: 'added', id: Date.now(), text: input.value.trim() });
     input.value = ''; // clear the box by hand — it's uncontrolled, React isn't tracking it
   };

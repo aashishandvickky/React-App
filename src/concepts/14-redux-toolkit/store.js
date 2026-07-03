@@ -4,9 +4,12 @@
    main.jsx via <Provider store={store}>.
    Used by: every useSelector/useDispatch in the app (ReduxDemo.jsx,
    the capstone). Why it exists: one central place that holds and
-   combines all slice state. How: configureStore plugs each slice
-   reducer into a branch of the state tree and auto-wires Redux
-   DevTools + default middleware (thunk, dev-time immutability checks).
+   combines all slice state (a slice = one feature's piece of state).
+   How: configureStore plugs each slice reducer into a branch of the
+   state tree and auto-wires Redux DevTools + default middleware
+   (middleware = code that runs between dispatch and the reducers;
+   the defaults enable thunks, i.e. async actions, plus dev-time
+   immutability checks).
    ───────────────────────────────────────────────────────────────────── */
 // configureStore is RTK's store factory. Interview: it replaces legacy createStore and
 // sets up DevTools + sensible default middleware for free.

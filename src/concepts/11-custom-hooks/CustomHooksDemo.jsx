@@ -27,7 +27,7 @@
    • useDebouncedValue (this folder) — delays a fast-changing value;
      RxJS debounceTime as a hook, used in ②
    • useFetch (this folder) — packages fetch + loading/error/data +
-     abort into one call, used in ③
+     abort (cancelling requests we no longer need) into one call, used in ③
    • conditional rendering (&&) — show "Loading…" / error / list in ③
      depending on which state the fetch is in
    • list rendering (.map + key) — turns the posts array into <li>s in ③
@@ -45,7 +45,8 @@ import { useFetch } from './useFetch.js';
 
 // ─── ① useLocalStorage demo — nickname that survives reloads ───
 function LocalStorageDemo() {
-  // Drop-in replacement for useState — same tuple, but persisted.
+  // Drop-in replacement for useState — same [value, setter] pair, but
+  // persisted (saved in the browser, so it survives reloads).
   const [nickname, setNickname] = useLocalStorage('lab:nickname', '');
   return (
     <div className="card">

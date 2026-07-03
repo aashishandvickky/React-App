@@ -41,7 +41,7 @@ function ControlledForm() {
   const handleChange = (e) => {
     // Object destructuring: pull four fields off the DOM input that fired the event (e.target).
     const { name, value, type, checked } = e.target;
-    // Functional update + spread: copy the previous form object, then overwrite ONE field.
+    // Functional update + spread: `...f` copies the previous form's fields, then we overwrite ONE.
     // [name] is a computed key — the input's name attribute decides which field to update.
     setForm((f) => ({ ...f, [name]: type === 'checkbox' ? checked : value }));
   };
@@ -51,7 +51,7 @@ function ControlledForm() {
   if (!form.name.trim()) errors.name = 'Name is required'; // .trim() → all-spaces fails too
   if (!/^\S+@\S+\.\S+$/.test(form.email)) errors.email = 'Valid email required'; // regex .test()
   if (!form.agree) errors.agree = 'You must accept the terms';
-  const isValid = Object.keys(errors).length === 0; // valid ⇔ no error keys were added above
+  const isValid = Object.keys(errors).length === 0; // valid simply means: no error keys added above
 
   // Fires on submit — Enter in a field or clicking the submit button both land here.
   const handleSubmit = (e) => {
@@ -68,7 +68,8 @@ function ControlledForm() {
       {/* value + onChange = "controlled": the DOM shows whatever state holds.
           value without onChange = read-only input (React warns). */}
       <input name="name" value={form.name} onChange={handleChange} />
-      {/* && short-circuit: render the error only while it exists (*ngIf). Same for email. */}
+      {/* && short-circuit: when the left side is false, React renders nothing at all.
+          So each error line shows only while that error exists (*ngIf). Same for email. */}
       {errors.name && <span className="error"> {errors.name}</span>}
 
       <label>Email</label>

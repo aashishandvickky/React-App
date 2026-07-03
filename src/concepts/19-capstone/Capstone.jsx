@@ -8,7 +8,8 @@
    button, and a list of exercises to extend the app yourself.
 
    WHAT'S IN THIS FILE, TOP TO BOTTOM
-   This ONE file composes almost every earlier concept. The pieces:
+   This ONE file composes (combines small parts into one page) almost
+   every earlier concept. The pieces:
    ① CartContext + cartReducer — the cart's "mini-Redux": all cart
       changes (added / removed / emptied) go through one pure reducer
       function. Taught in concept 09 (useReducer) + 08 (Context).
@@ -34,7 +35,8 @@
    INGREDIENTS USED HERE (what & why)
    • useReducer — cart state machine; like a single NgRx reducer.
    • createContext / useContext — share the cart app-wide without prop
-     drilling; like providing a service and injecting it.
+     drilling (passing props down through every level by hand); like
+     providing a service and injecting it.
    • useMemo — (a) stabilizes the context value in ②, (b) caches the
      filtered product list in ⑤.
    • useState — search text, category, and (via hooks) balance.
@@ -119,8 +121,8 @@ function useCart() {
 // ─── ④ SearchControls — controlled search input + category dropdown ───
 // Destructured props: value + callback pairs, the React version of @Input()/@Output() pairs.
 function SearchControls({ search, onSearch, category, onCategory }) {
-  // Controlled inputs (concept 05); state lives in the parent (lifted up)
-  // because ProductGrid needs it too.
+  // Controlled inputs (concept 05: React state supplies each value); the state
+  // lives in the parent — "lifted up" — because ProductGrid needs the same values too.
   return (
     <div className="card">
       <input value={search} onChange={(e) => onSearch(e.target.value)} placeholder="Search rewards…" />
@@ -140,7 +142,8 @@ function ProductGrid({ search, category }) {
   // Debounced so filtering doesn't run on every keystroke (concept 11).
   const debouncedSearch = useDebouncedValue(search, 300);
 
-  // Derived, memoized filtering (concepts 02 + 10) — never stored in state.
+  // Derived = computed on the fly (concept 02); memoized = cached (concept 10).
+  // The filtered list is never stored in state — it's recomputed when inputs change.
   // Rule: category matches (or 'All') AND the name contains the search text —
   // both sides lowercased so the match is case-insensitive.
   const visible = useMemo(

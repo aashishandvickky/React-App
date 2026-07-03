@@ -27,8 +27,8 @@
    • Cleanup functions — the `return () => …` inside an effect
      ≈ ngOnDestroy, but it also runs before every re-run of that effect.
    • useRef — one tiny guard flag in ①: the no-array effect writes state,
-     so it must skip its own echo render or it would loop forever
-     ("Maximum update depth exceeded"). Refs in depth → concept 07.
+     so it must skip the one extra render ("echo") its own write causes, or
+     it loops forever ("Maximum update depth exceeded"). Refs → concept 07.
 
    HOW TO READ THIS FILE
    Open the page in the browser next to this file. Each numbered marker
@@ -44,14 +44,16 @@ function DependencyDemo() {
   const [a, setA] = useState(0); // two independent counters…
   const [b, setB] = useState(0); // …so you can see which effect cares about which state
   const [log, setLog] = useState([]); // the lines printed in the <pre> below
-  // Helper: append a line, immutably. The functional update gets the current array (l);
-  // .slice(-6) copies the last 6 entries; the spread ...  puts them into a NEW array + msg.
+  // Helper: append a line, immutably (= build a NEW array, never edit the old one).
+  // The functional update gets the current array (l); .slice(-6) copies its last 6
+  // entries; the spread ... puts them into a NEW array together with msg.
   const push = (msg) => setLog((l) => [...l.slice(-6), msg]);
 
   // Guard for the no-array effect below. Careful: that effect SETS state (a log
-  // line), which causes a render, which re-runs the effect… → infinite loop and
-  // React's "Maximum update depth exceeded" error. Classic interview trap!
-  // The ref lets the effect skip the ONE echo render its own push caused.
+  // line), setting state causes a render, and a render re-runs the effect… →
+  // infinite loop, React's "Maximum update depth exceeded". Classic interview trap!
+  // The fix is a ref flag BECAUSE changing a ref does not itself re-render: the
+  // effect can mark "the next render is just my own echo — don't log that one".
   const skipEcho = useRef(false);
 
   // No array: after EVERY render. Rarely what you want — and if it also sets
@@ -124,8 +126,9 @@ function FetchDemo() {
   const [status, setStatus] = useState('loading'); // loading | error | ready
 
   useEffect(() => {
-    // AbortController cancels the request if the component unmounts (or deps
-    // change) mid-flight — prevents race conditions and state-after-unmount.
+    // AbortController cancels the request if the component unmounts (or deps change)
+    // while the request is still running ("mid-flight"). That prevents race conditions
+    // (a SLOW old response arriving late and overwriting newer data) and state-after-unmount.
     const controller = new AbortController();
 
     // The effect callback itself must NOT be async (it must return the
@@ -142,7 +145,7 @@ function FetchDemo() {
         if (err.name !== 'AbortError') setStatus('error');
       }
     }
-    load(); // kick it off (fire-and-forget — the setState calls above report back)
+    load(); // start it; no await ("fire-and-forget") — the setState calls above report the result
 
     return () => controller.abort(); // cleanup: cancel the request if we unmount mid-flight
   }, []); // fetch once on mount

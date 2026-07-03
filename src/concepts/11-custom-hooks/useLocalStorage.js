@@ -18,7 +18,8 @@ import { useState } from 'react'; // custom hooks are built FROM the built-in on
  * reusable-service role, minus the singleton-ness.)
  */
 export function useLocalStorage(key, initialValue) {
-  // Lazy initializer: read localStorage ONCE on mount, not every render.
+  // Lazy initializer: pass useState a FUNCTION and React calls it only ONCE
+  // (first render) — so localStorage is read once, not on every render.
   const [value, setValue] = useState(() => {
     // try/catch: localStorage can throw (private mode, quota) and JSON.parse throws on garbage.
     try {
@@ -38,7 +39,8 @@ export function useLocalStorage(key, initialValue) {
       // `next` may be a plain value OR an updater fn (like setCount(c => c + 1)); typeof tells.
       const resolved = typeof next === 'function' ? next(prev) : next;
       try {
-        // localStorage stores only strings — JSON.stringify serializes any value first.
+        // localStorage stores only strings — JSON.stringify serializes any value
+        // (turns it into a JSON string) first.
         window.localStorage.setItem(key, JSON.stringify(resolved));
       } catch {
         /* storage full/blocked — state still works in-memory */
@@ -47,6 +49,6 @@ export function useLocalStorage(key, initialValue) {
     });
   };
 
-  // Return the same tuple shape as useState — familiar API, drop-in swap.
+  // Return the same [value, setter] pair shape as useState — familiar API, drop-in swap.
   return [value, setStoredValue];
 }

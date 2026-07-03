@@ -20,9 +20,9 @@
    ⑥ RefsDemo — the page component that stacks the four cards.
 
    INGREDIENTS USED HERE (what & why)
-   • useRef    — a mutable box ({ current }) that SURVIVES re-renders and
-     whose mutation does NOT trigger a re-render. Two jobs in this file:
-     holding DOM nodes (①④⑤) and holding plain values (②③).
+   • useRef    — a "mutable box" ({ current }): you may change it freely, it
+     SURVIVES re-renders, and changing it does NOT re-render. Two jobs in
+     this file: holding DOM nodes (①④⑤) and holding plain values (②③).
    • useState  — the text input and the points score; changing these is
      what actually re-renders (contrast with refs).
    • useEffect — the safe place to TOUCH refs: DOM refs are only filled
@@ -97,9 +97,9 @@ function PreviousValueDemo() {
   const [points, setPoints] = useState(1000);
   const prev = useRef(undefined); // a value box (not a DOM ref) — remembers across renders
 
-  // After every commit, stash the current value; during render, prev.current
-  // still holds the one from the PREVIOUS render. (This is how the old
-  // usePrevious() custom hook works.)
+  // After every commit ("commit" = React finished updating the real DOM), stash the
+  // current value. During render this effect has NOT run yet, so prev.current still
+  // holds the PREVIOUS render's value. (This is how the usePrevious() custom hook works.)
   useEffect(() => {
     prev.current = points;
   }, [points]);
@@ -112,7 +112,7 @@ function PreviousValueDemo() {
       <h3>Previous value via ref</h3>
       <p>
         Points: <strong>{points}</strong>{' '}
-        {/* && hides the delta on the very first render; ternaries pick color and the "+". */}
+        {/* && hides the change note on the first render (diff is 0); ternaries pick color + "+". */}
         {diff !== 0 && (
           <span className={diff > 0 ? 'success' : 'error'}>
             ({diff > 0 ? '+' : ''}{diff} since last render)

@@ -3,10 +3,10 @@
  *
  * Hooks can't be called outside a component, so RTL's renderHook mounts a
  * tiny test component for you. Timer-based logic uses vi.useFakeTimers()
- * so tests are instant and deterministic.
+ * so tests are instant and deterministic (same result every run).
  *
- * act(...) wraps anything that triggers state updates, so React flushes
- * renders before you assert.
+ * act(...) wraps anything that triggers state updates, so React finishes
+ * ("flushes") the resulting re-renders before you assert.
  */
 // Destructured named imports from React Testing Library:
 // renderHook — mounts a hook inside a hidden test component (there's no UI to render);
@@ -30,7 +30,8 @@ describe('useDebouncedValue (concept 11)', () => {
     // these args and captures whatever it returns.
     // `() => useDebouncedValue('hello', 300)` — the wrapper renderHook runs on each render.
     const { result } = renderHook(() => useDebouncedValue('hello', 300));
-    // result.current is the hook's LATEST return value (a live ref, not a snapshot).
+    // result.current always holds the hook's LATEST return value — it updates on
+    // every re-render (not a frozen copy taken at mount).
     // toBe = strict equality (===), like Jasmine's toBe. No delay on first render.
     expect(result.current).toBe('hello');
   });
@@ -50,7 +51,8 @@ describe('useDebouncedValue (concept 11)', () => {
     rerender({ value: 'abc' }); // rapid changes — timer keeps resetting
 
     // Before 300ms of quiet: still the ORIGINAL value.
-    // advanceTimersByTime(299) fast-forwards fake time — the fakeAsync tick(299) of Vitest.
+    // advanceTimersByTime(299) fast-forwards fake time — Vitest's version of
+    // Angular's fakeAsync tick(299).
     // Wrapped in act() because firing the timer would trigger a React state update.
     act(() => vi.advanceTimersByTime(299));
     expect(result.current).toBe('a');

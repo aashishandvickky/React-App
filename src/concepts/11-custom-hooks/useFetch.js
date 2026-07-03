@@ -10,9 +10,9 @@
 import { useEffect, useState } from 'react';
 
 /**
- * useFetch — the "wrap async data in a hook" pattern every team hand-rolls
- * before adopting TanStack Query. Encapsulates: loading/error/data states,
- * refetch-on-url-change, aborting stale requests.
+ * useFetch — the "wrap async data in a hook" pattern every team writes by
+ * hand before adopting TanStack Query. Bundles together: loading/error/data
+ * states, refetch when the url changes, aborting stale (outdated) requests.
  */
 export function useFetch(url) {
   const [data, setData] = useState(null); // the parsed JSON once it arrives
@@ -40,7 +40,7 @@ export function useFetch(url) {
       })
       // .catch handles BOTH network failures and the throw above.
       .catch((err) => {
-        // Aborts are expected (unmount / url changed mid-flight) — not errors.
+        // Aborts are expected (unmount / url changed while the request was running) — not errors.
         if (err.name !== 'AbortError') {
           setError(err.message);
           setLoading(false);
@@ -48,7 +48,8 @@ export function useFetch(url) {
       });
 
     // Abort the in-flight request when url changes or component unmounts.
-    // This is what prevents the classic "old response overwrites new" race.
+    // This prevents the classic race condition: an OLD response arriving late
+    // and overwriting the newer one on screen.
     // Interview: "how do you cancel a fetch on unmount?" — exactly this cleanup.
     return () => controller.abort();
   }, [url]); // dep: re-run the whole dance whenever the url argument changes

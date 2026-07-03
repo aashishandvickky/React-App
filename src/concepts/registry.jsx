@@ -7,7 +7,8 @@
    Full plain-language tour of how these files connect:
    docs/HOW_THE_APP_WORKS.md
    ───────────────────────────────────────────────────────────────────── */
-// lazy() wraps a dynamic import(...) so a component's code ships as a separate JS chunk.
+// lazy() wraps a dynamic import(...) so a component's code ships as a separate JS
+// "chunk" — its own file, downloaded only when that page is first opened.
 import { lazy } from 'react';
 
 /**
@@ -23,8 +24,9 @@ import { lazy } from 'react';
 // Each entry: path = the URL, title = sidebar label, Component = the lazy page component.
 // "Component" is capitalized on purpose: JSX treats <lowercase> as an HTML tag but
 // <Capitalized /> as a React component (App.jsx renders <c.Component />).
-// () => import('...') is an arrow function returning a Promise; React calls it the
-// first time the route renders, then the browser downloads just that chunk.
+// () => import('...') is an arrow function returning a Promise (a value that arrives
+// later). React calls it the first time the route renders, and the browser then
+// downloads just that chunk.
 export const CONCEPTS = [
   // 00 is first on purpose: "/" redirects to CONCEPTS[0], so this is the landing page.
   { path: '/00-welcome',           title: '00 · 👋 Start Here',            Component: lazy(() => import('./00-welcome/Welcome.jsx')) },

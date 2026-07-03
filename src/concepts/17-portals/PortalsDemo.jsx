@@ -57,9 +57,10 @@ function Modal({ title, onClose, children }) {
   // createPortal(jsx, domNode): the JSX mounts under document.body,
   // NOT under the clipped parent below.
   // Interview: only the DOM location changes — the component keeps its place in the REACT
-  // tree, so context still flows in and synthetic events bubble to React parents as usual.
+  // tree, so context still flows in and synthetic events (React's wrapped events) still
+  // bubble (travel upward, child → parent) to React parents as usual.
   return createPortal(
-    // 1st arg (the JSX): a fixed backdrop covering the viewport (inset: 0 = all four sides 0).
+    // 1st arg (the JSX): the backdrop — the dark full-screen layer (inset: 0 = all four sides 0).
     <div
       onClick={onClose} // backdrop click closes
       style={{
@@ -67,7 +68,8 @@ function Modal({ title, onClose, children }) {
         display: 'grid', placeItems: 'center', zIndex: 1000,
       }}
     >
-      {/* stopPropagation so clicks INSIDE the dialog don't hit the backdrop */}
+      {/* stopPropagation halts the upward click travel — without it, any click
+          inside the dialog would reach the backdrop's onClick and close the modal. */}
       <div className="card" style={{ minWidth: 320 }} onClick={(e) => e.stopPropagation()}>
         <h3>{title}</h3>
         {children}

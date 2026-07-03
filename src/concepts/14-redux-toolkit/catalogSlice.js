@@ -11,8 +11,9 @@
 
 /**
  * ASYNC REDUX — createAsyncThunk.
- * A thunk dispatches pending/fulfilled/rejected actions around an async
- * call; extraReducers maps those to loading/error/data state.
+ * A thunk (a FUNCTION you dispatch to run async work, instead of a
+ * plain action object) emits pending/fulfilled/rejected actions around
+ * an async call; extraReducers maps those to loading/error/data state.
  * (Angular/NgRx analogy: an @Effect listening for an action, calling a
  * service, dispatching success/failure — minus RxJS.)
  */
@@ -52,7 +53,8 @@ const catalogSlice = createSlice({
         state.status = 'succeeded';
         state.items = action.payload;
       })
-      // The thrown Error is serialized onto action.error — we keep only its message.
+      // The thrown Error is serialized (converted to a plain, storable object) onto
+      // action.error — we keep only its message.
       .addCase(fetchCatalog.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;

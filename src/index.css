@@ -2,7 +2,8 @@
 
 /* CSS custom properties ("CSS variables") declared on :root, the <html> element.
    Every rule below reuses them via var(--name) — one place to retheme the whole app.
-   Also sets the app-wide font stack (system-ui = the OS's native UI font). */
+   Also sets the app-wide font stack — a list of fonts, the browser uses the first
+   one it has (system-ui = the OS's native UI font). */
 :root {
   --bg: #0f172a;
   --panel: #1e293b;
