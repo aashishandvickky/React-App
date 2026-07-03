@@ -1,12 +1,51 @@
-/**
- * CONCEPT 18 — CONCURRENT FEATURES (React 18+)
- * useTransition & useDeferredValue: mark heavy updates as NON-URGENT so
- * urgent updates (typing!) stay instant. React renders the slow part in
- * the background and can abandon it if new input arrives.
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 18 · Concurrent Features (ConcurrentDemo.jsx)
+
+   WHAT YOU SEE IN THE BROWSER
+   Three search boxes, each feeding the SAME deliberately slow 250-row
+   list. Type fast in each one: the first box lags (janky), the other
+   two stay instant because the heavy list re-renders in the background.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① SlowList — the shared "villain": burns ~1ms of CPU per row
+      (~250ms per render) so the jank is impossible to miss.
+   ② JankyDemo — the ❌ card. One piece of state drives BOTH the input
+      and the slow list, so every keystroke pays the full 250ms.
+   ③ TransitionDemo — the ✅ useTransition card. The same keystroke
+      does TWO updates: an urgent one (the input echo) and a
+      non-urgent one wrapped in startTransition (the slow list).
+   ④ DeferredDemo — the ✅ useDeferredValue card. Same idea when you
+      only RECEIVE a value: the list gets a "lagging" copy of the text
+      that catches up in a background render.
+   ⑤ ConcurrentDemo — the page: stacks ②③④ + a mental-model card.
+
+   INGREDIENTS USED HERE (what & why)
+   • useState — the input text in every demo (plus the separate `query`
+     state in ③ that drives the slow list).
+   • useTransition — returns [isPending, startTransition]; updates
+     wrapped in startTransition are low priority: React renders them in
+     the background and ABANDONS the render if you type again.
+   • useDeferredValue — hands you a delayed copy of a value; the slow
+     list renders with the old copy first, then catches up.
+   • useMemo — inside ①, caches the built rows so the list only re-does
+     its expensive work when `query` actually changes.
+     (Angular has no direct analogy — closest is debouncing a
+     valueChanges stream, but transitions START work immediately and
+     merely keep it interruptible.)
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one section on screen. Read NOTES.md in this
+   folder for the theory. Confused by a word? → docs/GLOSSARY.md
+
+   Big idea (React 18+): mark heavy updates as NON-URGENT so urgent
+   updates (typing!) stay instant. React renders the slow part in the
+   background and can abandon it if new input arrives.
+   ═══════════════════════════════════════════════════════════════════════ */
 import { useDeferredValue, useMemo, useState, useTransition } from 'react';
 
-// A deliberately heavy list: each row burns a little CPU while rendering.
+// ─── ① SlowList — deliberately heavy list (~250ms per render) ───
+// Each row burns a little CPU while rendering.
 function SlowList({ query }) {
   const items = useMemo(() => {
     const out = [];
@@ -25,6 +64,7 @@ function SlowList({ query }) {
   );
 }
 
+// ─── ② JankyDemo — the blocking version (feel the lag) ───
 /** WITHOUT concurrency: one state drives input + heavy list → typing janks. */
 function JankyDemo() {
   const [text, setText] = useState('');
@@ -37,6 +77,7 @@ function JankyDemo() {
   );
 }
 
+// ─── ③ TransitionDemo — useTransition keeps typing instant ───
 /** useTransition: split ONE event into urgent + non-urgent state updates. */
 function TransitionDemo() {
   const [text, setText] = useState('');       // urgent: the input echo
@@ -63,6 +104,7 @@ function TransitionDemo() {
   );
 }
 
+// ─── ④ DeferredDemo — useDeferredValue for values you only receive ───
 /** useDeferredValue: same idea when you only RECEIVE a value (e.g. a prop). */
 function DeferredDemo() {
   const [text, setText] = useState('');
@@ -83,6 +125,7 @@ function DeferredDemo() {
   );
 }
 
+// ─── ⑤ ConcurrentDemo — the page: all three demos + mental model ───
 export default function ConcurrentDemo() {
   return (
     <>

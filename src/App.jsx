@@ -1,3 +1,12 @@
+/* ─────────────────────────────────────────────────────────────────────
+   📖 WHAT THIS FILE IS — App.jsx
+   The app's shell: the sidebar on the left (one link per concept, built
+   from the list in concepts/registry.jsx) and the content area on the
+   right, where the router swaps in whichever concept page matches the
+   current URL. Angular-wise: AppComponent's template + <router-outlet>.
+   Full plain-language tour of how these files connect:
+   docs/HOW_THE_APP_WORKS.md
+   ───────────────────────────────────────────────────────────────────── */
 import { Suspense } from 'react';
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import { CONCEPTS } from './concepts/registry.jsx';

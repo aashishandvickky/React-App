@@ -1,13 +1,35 @@
-/**
- * CONCEPT 01 — JSX BASICS
- * Read NOTES.md in this folder for the theory + interview questions.
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 01 · JSX Basics (JsxBasics.jsx)
+
+   WHAT YOU SEE IN THE BROWSER
+   A page with 4 cards showing: text interpolation, JSX attribute quirks,
+   a list preview, and what JSX compiles to.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① Plain JavaScript data (a student object, a skills array, the time)
+      and a bit of JSX saved in a variable
+   ② A card: putting JS values into the UI with { }
+   ③ A card: how JSX attributes differ from HTML (className, htmlFor, style)
+   ④ A card: rendering a list with .map()
+   ⑤ A card: the JavaScript that JSX turns into
+
+   INGREDIENTS USED HERE (what & why)
+   • JSX            — HTML-like syntax inside JS; describes what the UI looks like
+   • Fragment <>…</>— groups elements without adding a wrapper <div> to the page
+   • {expression}   — drops a JavaScript value into the middle of the UI
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one card on screen. Read NOTES.md in this folder
+   for the theory. Confused by a word? → docs/GLOSSARY.md
+   ═══════════════════════════════════════════════════════════════════════ */
 
 // JSX is NOT HTML. It compiles to function calls: <h2 id="x">hi</h2>
 // becomes jsx('h2', { id: 'x', children: 'hi' }). Because it's just
 // JavaScript expressions, you can assign it to variables, return it,
 // pass it around — that's what makes composition possible.
 export default function JsxBasics() {
+  // ─── ① Plain JS data + a JSX snippet stored in a variable ───
   // Plain JS above the return — runs on EVERY render.
   const student = { name: 'Ashish', background: 'Angular', years: 8 };
   const skills = ['Java', 'Angular', 'Spring', 'React (learning)'];
@@ -24,6 +46,7 @@ export default function JsxBasics() {
       <h2>01 · JSX Basics</h2>
       {banner}
 
+      {/* ─── ② A card: putting JS values into the UI with { } ─── */}
       <div className="card">
         <h3>Interpolation: {'{ }'} instead of {'{{ }}'}</h3>
         {/* Anything inside { } is a JS EXPRESSION (no statements/if/for). */}
@@ -35,6 +58,7 @@ export default function JsxBasics() {
         <p>2 + 2 = {2 + 2} · uppercase: {student.background.toUpperCase()}</p>
       </div>
 
+      {/* ─── ③ A card: how JSX attributes differ from HTML ─── */}
       <div className="card">
         <h3>Attribute differences vs HTML</h3>
         {/* className (not class), htmlFor (not for), camelCase events. */}
@@ -46,6 +70,7 @@ export default function JsxBasics() {
         </p>
       </div>
 
+      {/* ─── ④ A card: rendering a list with .map() ─── */}
       <div className="card">
         <h3>Lists preview (details in concept 04)</h3>
         <ul>
@@ -56,6 +81,7 @@ export default function JsxBasics() {
         </ul>
       </div>
 
+      {/* ─── ⑤ A card: the JavaScript that JSX turns into ─── */}
       <div className="card">
         <h3>What JSX compiles to</h3>
         <pre>{`// You write:

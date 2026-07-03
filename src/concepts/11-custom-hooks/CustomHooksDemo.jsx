@@ -1,14 +1,48 @@
-/**
- * CONCEPT 11 — CUSTOM HOOKS
- * The primary code-reuse mechanism in React (replaces Angular services,
- * mixins, HOCs, render-props). Read the three hooks in this folder first:
- * useLocalStorage.js · useDebouncedValue.js · useFetch.js
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 11 · Custom Hooks (CustomHooksDemo.jsx)
+
+   Custom hooks are React's primary code-reuse mechanism (they replace
+   Angular services, mixins, HOCs, render-props). Read the three hooks in
+   this folder first: useLocalStorage.js · useDebouncedValue.js · useFetch.js
+
+   WHAT YOU SEE IN THE BROWSER
+   Three small cards: a nickname box that survives page reloads, a search
+   box that shows a "live" vs "debounced" value as you type, and a list
+   of posts loaded from a fake API. Plus a closing "key insight" card.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① LocalStorageDemo — an input wired to useLocalStorage.js; the value
+      persists in the browser's localStorage across reloads
+   ② DebounceDemo — an input wired to useDebouncedValue.js; the debounced
+      copy only updates 500ms after you stop typing
+   ③ FetchDemo — useFetch.js loads /data/posts.json and hands back
+      loading / error / data, which the JSX renders conditionally
+   ④ CustomHooksDemo — the page component: assembles ①–③ and ends with
+      a card explaining that hooks share LOGIC, not STATE
+
+   INGREDIENTS USED HERE (what & why)
+   • useState — plain local state for the search box text in ②
+   • useLocalStorage (this folder) — useState that also writes to
+     localStorage, so ①'s nickname survives a reload
+   • useDebouncedValue (this folder) — delays a fast-changing value;
+     RxJS debounceTime as a hook, used in ②
+   • useFetch (this folder) — packages fetch + loading/error/data +
+     abort into one call, used in ③
+   • conditional rendering (&&) — show "Loading…" / error / list in ③
+     depending on which state the fetch is in
+   • list rendering (.map + key) — turns the posts array into <li>s in ③
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one section on screen. Read NOTES.md in this
+   folder for the theory. Confused by a word? → docs/GLOSSARY.md
+   ═══════════════════════════════════════════════════════════════════════ */
 import { useState } from 'react';
 import { useLocalStorage } from './useLocalStorage.js';
 import { useDebouncedValue } from './useDebouncedValue.js';
 import { useFetch } from './useFetch.js';
 
+// ─── ① useLocalStorage demo — nickname that survives reloads ───
 function LocalStorageDemo() {
   // Drop-in replacement for useState — same tuple, but persisted.
   const [nickname, setNickname] = useLocalStorage('lab:nickname', '');
@@ -25,6 +59,7 @@ function LocalStorageDemo() {
   );
 }
 
+// ─── ② useDebouncedValue demo — live vs debounced text ───
 function DebounceDemo() {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebouncedValue(query, 500);
@@ -40,6 +75,7 @@ function DebounceDemo() {
   );
 }
 
+// ─── ③ useFetch demo — loading / error / data from a fake API ───
 function FetchDemo() {
   const { data: posts, error, loading } = useFetch('/data/posts.json');
   return (
@@ -58,6 +94,7 @@ function FetchDemo() {
   );
 }
 
+// ─── ④ The page — assembles ①–③ plus the key-insight card ───
 export default function CustomHooksDemo() {
   return (
     <>
@@ -65,6 +102,7 @@ export default function CustomHooksDemo() {
       <LocalStorageDemo />
       <DebounceDemo />
       <FetchDemo />
+      {/* ─── ④ Key insight: hooks share LOGIC, not STATE ─── */}
       <div className="card">
         <h3>Key insight: hooks share LOGIC, not STATE</h3>
         <pre>{`Two components calling useLocalStorage('k', …) each run their own

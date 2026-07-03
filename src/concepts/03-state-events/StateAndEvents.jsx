@@ -1,9 +1,35 @@
-/**
- * CONCEPT 03 — STATE & EVENTS (useState)
- * The single most important hook. Read NOTES.md for the batching/async story.
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 03 · State & Events (StateAndEvents.jsx)
+
+   WHAT YOU SEE IN THE BROWSER
+   A page with 3 cards: a counter with broken vs fixed "+3" buttons, a JSON
+   profile you update without mutating it, and a live log of input/click events.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① Counter         — number state; proves updates are batched and each
+      render "sees" its own snapshot of state (exported so tests can use it)
+   ② ObjectStateDemo — object/array state; update by COPYING, never mutating
+   ③ EventsDemo      — camelCase event props and React's SyntheticEvent
+   ④ The page component — just stacks the three cards above
+
+   INGREDIENTS USED HERE (what & why)
+   • useState             — a value React remembers between renders + a setter;
+                            calling the setter schedules a re-render
+   • functional update    — setCount(c => c + 1): reads the LATEST pending
+                            value, safe to call several times in a row
+   • immutability         — copy with spread {...old}/[...old]; React compares
+                            references to decide whether to re-render
+   • onClick/onChange/…   — event props are camelCase; you pass a FUNCTION
+   • SyntheticEvent       — React's cross-browser wrapper around DOM events
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one card on screen. Read NOTES.md in this folder
+   for the theory. Confused by a word? → docs/GLOSSARY.md
+   ═══════════════════════════════════════════════════════════════════════ */
 import { useState } from 'react';
 
+// ─── ① Counter — batched updates & per-render snapshots ───
 // Exported separately so Counter.test.jsx can test it in isolation.
 export function Counter() {
   // useState returns [currentValue, setterFunction].
@@ -43,6 +69,7 @@ export function Counter() {
   );
 }
 
+// ─── ② ObjectStateDemo — object/array state, updated immutably ───
 function ObjectStateDemo() {
   // State can be any value. RULE: never MUTATE it — always create a new
   // object/array. React compares by reference (Object.is) to decide to re-render.
@@ -70,6 +97,7 @@ function ObjectStateDemo() {
   );
 }
 
+// ─── ③ EventsDemo — camelCase event props & SyntheticEvent ───
 function EventsDemo() {
   const [log, setLog] = useState([]);
   const push = (msg) => setLog((l) => [...l.slice(-4), msg]);
@@ -98,6 +126,7 @@ function EventsDemo() {
   );
 }
 
+// ─── ④ The page component — stacks the three cards ───
 export default function StateAndEvents() {
   return (
     <>

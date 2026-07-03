@@ -1,13 +1,45 @@
-/**
- * CONCEPT 17 — PORTALS & MODALS
- * createPortal renders children into a DIFFERENT DOM node while keeping
- * them in the same React tree (context, state, and events still work!).
- * Use cases: modals, tooltips, dropdowns, toasts — anything that must
- * escape parent overflow/z-index/transform traps.
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 17 · Portals & Modals (PortalsDemo.jsx)
+
+   WHAT YOU SEE IN THE BROWSER
+   A short, clipped card (overflow:hidden) with an "Open modal" button.
+   Click it: a full-screen modal appears OVER everything — even though
+   its JSX lives inside that tiny clipped card. Close it with the
+   button, the Escape key, or a click on the dark backdrop.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① Modal — a reusable modal component. Its return value goes through
+      createPortal(...), so the DOM lands under document.body instead
+      of inside the clipped parent. Also wires an Escape-key listener
+      (with cleanup) and stops backdrop clicks from leaking inward.
+   ② PortalsDemo — the page. Renders the clipped card that would trap
+      a normal modal, the button that opens ①, and closes with a
+      "key interview facts" card.
+
+   INGREDIENTS USED HERE (what & why)
+   • createPortal (from react-dom) — the star of the show: render JSX
+     into a DIFFERENT DOM node (document.body here) while staying in
+     the SAME React tree, so context/state/events all still work.
+     (Angular analogy: CDK Overlay attaching to document.body.)
+   • useState — the `open` boolean that shows/hides the modal.
+   • useEffect — adds a document-level keydown listener for Escape and
+     removes it in cleanup when the modal unmounts.
+   • useRef — holds a reference to the clipped card's DOM node.
+   • e.stopPropagation() — clicks inside the dialog must not reach the
+     backdrop's onClick (which would close the modal).
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one section on screen. Read NOTES.md in this
+   folder for the theory. Confused by a word? → docs/GLOSSARY.md
+
+   Use cases for portals: modals, tooltips, dropdowns, toasts — anything
+   that must escape parent overflow/z-index/transform traps.
+   ═══════════════════════════════════════════════════════════════════════ */
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+// ─── ① Modal — reusable dialog rendered through createPortal ───
 function Modal({ title, onClose, children }) {
   // Close on Escape — a document-level listener with proper cleanup.
   useEffect(() => {
@@ -37,6 +69,7 @@ function Modal({ title, onClose, children }) {
   );
 }
 
+// ─── ② PortalsDemo — the page: clipped parent + open button + facts ───
 export default function PortalsDemo() {
   const [open, setOpen] = useState(false);
   const clippedBox = useRef(null);

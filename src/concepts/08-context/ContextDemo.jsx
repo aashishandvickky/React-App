@@ -1,16 +1,48 @@
-/**
- * CONCEPT 08 — CONTEXT API
- * Solves PROP DRILLING: passing data through layers of components that don't
- * use it. Angular analogy: a DI-provided service visible to a subtree.
- * Context is a transport for values, NOT a state manager by itself —
- * it's usually paired with useState/useReducer in a provider component.
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 08 · Context API (ContextDemo.jsx)
+
+   WHAT YOU SEE IN THE BROWSER
+   Three cards: a theme-toggle button that lives three components deep
+   (yet no props were passed down), a second button locked to light theme
+   by a nested provider, and a text card about consumer re-renders.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① ThemeContext — createContext(): the "channel" components tune into.
+   ② ThemeProvider — a wrapper component that OWNS the theme state and
+      broadcasts { theme, toggle } to everything under it.
+   ③ useTheme — a custom hook wrapping useContext, with a guard that
+      throws if there is no provider above.
+   ④ Toolbar → Section → ThemedButton — a deep tree where the middle
+      layers pass NO props, yet the button reads the theme.
+   ⑤ NestedProvidersDemo — a second, inner provider forcing light theme;
+      consumers always read the NEAREST provider above them.
+   ⑥ ContextDemo — the page: wraps everything in ThemeProvider and lays
+      out the three cards.
+
+   INGREDIENTS USED HERE (what & why)
+   • createContext — makes the context object itself (≈ an injection
+     token). Default value only applies when no provider exists.
+   • useContext   — reads the nearest provider's value (via useTheme ③).
+   • useState     — the actual theme state, kept INSIDE the provider ②;
+     context only transports it (context is not a state manager itself).
+   • useMemo      — keeps the provider's value object reference-stable so
+     consumers don't re-render on every provider render.
+   Angular analogy: a DI-provided service visible to one subtree — this
+   whole file solves PROP DRILLING.
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one section on screen. Read NOTES.md in this
+   folder for the theory. Confused by a word? → docs/GLOSSARY.md
+   ═══════════════════════════════════════════════════════════════════════ */
 import { createContext, useContext, useMemo, useState } from 'react';
 
+// ─── ① ThemeContext — create the context ───
 // 1) CREATE — usually in its own module so any component can import it.
 //    The default value is used only when there's NO provider above (rare/tests).
 const ThemeContext = createContext(null);
 
+// ─── ② ThemeProvider — own the state, broadcast it downward ───
 // 2) PROVIDE — a wrapper component owning the state + exposing an API.
 //    This "provider component" pattern is the idiomatic mini state manager.
 function ThemeProvider({ children }) {
@@ -25,6 +57,7 @@ function ThemeProvider({ children }) {
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
+// ─── ③ useTheme — read the context via a guarded custom hook ───
 // 3) CONSUME — via a custom hook that also guards against a missing provider.
 //    Every serious codebase wraps useContext like this.
 function useTheme() {
@@ -33,7 +66,7 @@ function useTheme() {
   return ctx;
 }
 
-// ---------- Deep tree: no props pass through the middle ------------------
+// ─── ④ Toolbar → Section → ThemedButton — deep tree, zero props drilled ───
 function Toolbar() {
   // Note: Toolbar gets NO theme props — yet ThemedButton below can read it.
   return (
@@ -59,7 +92,7 @@ function ThemedButton() {
   );
 }
 
-// ---------- Nested providers override outer ones --------------------------
+// ─── ⑤ NestedProvidersDemo — nested providers override outer ones ───
 function NestedProvidersDemo() {
   return (
     <ThemeContext.Provider value={{ theme: 'light', toggle: () => {} }}>
@@ -71,6 +104,7 @@ function NestedProvidersDemo() {
   );
 }
 
+// ─── ⑥ ContextDemo — the page, wrapped in ThemeProvider ───
 export default function ContextDemo() {
   return (
     <ThemeProvider>

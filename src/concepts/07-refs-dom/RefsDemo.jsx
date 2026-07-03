@@ -1,12 +1,41 @@
-/**
- * CONCEPT 07 — REFS & THE DOM
- * useRef = a mutable box ({ current }) that SURVIVES re-renders and whose
- * mutation does NOT trigger a re-render. Two jobs:
- *   1. Holding DOM nodes (like @ViewChild/ElementRef)
- *   2. Holding any mutable value outside the render cycle (timer ids, prev values)
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 07 · Refs & the DOM (RefsDemo.jsx)
+
+   WHAT YOU SEE IN THE BROWSER
+   Four cards: an input that focuses itself on load (with Select/Measure
+   buttons), a live render counter, a points score that shows the change
+   since the last render, and a parent button that focuses a child's input.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① DomRefDemo — holds a ref to a real DOM <input> to focus, select,
+      and measure it (≈ @ViewChild/ElementRef).
+   ② RenderCounter — a ref as a plain mutable box: counts renders
+      WITHOUT causing new renders (state would loop forever here).
+   ③ PreviousValueDemo — the "usePrevious" trick: an effect stashes the
+      value after each render so you can diff old vs new.
+   ④ FancyInput — a small child component that receives `ref` as a
+      normal prop (React 19 style; ≤18 needed forwardRef).
+   ⑤ ForwardRefDemo — the parent that holds a ref to FancyInput's input
+      and focuses it with a button.
+   ⑥ RefsDemo — the page component that stacks the four cards.
+
+   INGREDIENTS USED HERE (what & why)
+   • useRef    — a mutable box ({ current }) that SURVIVES re-renders and
+     whose mutation does NOT trigger a re-render. Two jobs in this file:
+     holding DOM nodes (①④⑤) and holding plain values (②③).
+   • useState  — the text input and the points score; changing these is
+     what actually re-renders (contrast with refs).
+   • useEffect — the safe place to TOUCH refs: DOM refs are only filled
+     in AFTER render (① focus-on-mount, ③ stash-previous-value).
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one section on screen. Read NOTES.md in this
+   folder for the theory. Confused by a word? → docs/GLOSSARY.md
+   ═══════════════════════════════════════════════════════════════════════ */
 import { useEffect, useRef, useState } from 'react';
 
+// ─── ① DomRefDemo — a ref to a real DOM node: focus, select, measure ───
 function DomRefDemo() {
   const inputRef = useRef(null); // ≈ @ViewChild('input')
 
@@ -31,6 +60,7 @@ function DomRefDemo() {
   );
 }
 
+// ─── ② RenderCounter — a ref as a mutable box (no re-render on change) ───
 function RenderCounter() {
   const [text, setText] = useState('');
   // INTERVIEW FAVORITE: count renders WITHOUT causing renders.
@@ -52,6 +82,7 @@ function RenderCounter() {
   );
 }
 
+// ─── ③ PreviousValueDemo — remember last render's value in a ref ───
 function PreviousValueDemo() {
   const [points, setPoints] = useState(1000);
   const prev = useRef(undefined);
@@ -82,6 +113,7 @@ function PreviousValueDemo() {
   );
 }
 
+// ─── ④ FancyInput — a child component that accepts a ref ───
 // Ref to a CUSTOM component: since React 19, ref is a normal prop.
 // (Before 19 you needed React.forwardRef — still worth knowing for interviews.)
 function FancyInput({ ref, label }) {
@@ -93,6 +125,7 @@ function FancyInput({ ref, label }) {
   );
 }
 
+// ─── ⑤ ForwardRefDemo — the parent focuses the child's input ───
 function ForwardRefDemo() {
   const childInputRef = useRef(null);
   return (
@@ -109,6 +142,7 @@ function ForwardRefDemo() {
   );
 }
 
+// ─── ⑥ RefsDemo — the page component that stacks the four cards ───
 export default function RefsDemo() {
   return (
     <>

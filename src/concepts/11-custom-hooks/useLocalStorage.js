@@ -1,3 +1,12 @@
+/* ─────────────────────────────────────────────────────────────────────
+   📖 WHAT THIS FILE IS — useLocalStorage.js
+   A reusable custom hook: works exactly like useState (same [value,
+   setter] pair) but the value also survives page reloads.
+   Used by: CustomHooksDemo.jsx (nickname box).
+   Why it exists: persisting a bit of state is a chore worth writing
+   once. How: reads localStorage once on mount (lazy initializer) and
+   a wrapped setter writes every new value back as JSON.
+   ───────────────────────────────────────────────────────────────────── */
 import { useState } from 'react';
 
 /**

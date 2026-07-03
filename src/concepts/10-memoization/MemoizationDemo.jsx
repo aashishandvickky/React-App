@@ -1,13 +1,44 @@
-/**
- * CONCEPT 10 — MEMOIZATION: React.memo, useMemo, useCallback
- * Golden rule first: React is fast; re-renders are usually fine.
- * Memoize when (a) a computation is expensive, or (b) you need a STABLE
- * REFERENCE so a memoized child / effect deps don't fire needlessly.
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 10 · Memoization (MemoizationDemo.jsx)
+
+   WHAT YOU SEE IN THE BROWSER
+   A product table with category buttons, an "unrelated state" toggle, a
+   memoized expensive total, and a cheat card. Click the toggle and watch
+   the rows' "rendered @" timestamps NOT change — that's memo working.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① expensiveTotal — a helper that deliberately burns ~120ms so you can
+      FEEL when it re-runs (and when useMemo skips it).
+   ② ProductRow — a table row wrapped in React.memo: it skips
+      re-rendering when its props are shallow-equal (≈ OnPush).
+   ③ MemoizationDemo — the page component: three pieces of state, a
+      useMemo'd filter + total, and a useCallback'd buy handler.
+   ④ The interactive card — category buttons, the unrelated toggle, and
+      the table of memoized rows.
+   ⑤ The cheat card — the dependency chain that makes memo work, and
+      why one inline prop ruins it.
+
+   INGREDIENTS USED HERE (what & why)
+   • React.memo  — wraps ProductRow so rows only re-render when their
+     own props change, not when the parent re-renders.
+   • useMemo     — caches the filtered list and the 120ms total so
+     toggling unrelated state doesn't redo the heavy work.
+   • useCallback — keeps handleBuy the SAME function object across
+     renders; without it, memo(ProductRow) would see a "new" prop and
+     re-render anyway.
+   • useState    — category, the unrelated dark toggle, and bought ids.
+   Golden rule: React is fast; re-renders are usually fine. Memoize for
+   (a) expensive computation or (b) a stable reference. Measure first.
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one section on screen. Read NOTES.md in this
+   folder for the theory. Confused by a word? → docs/GLOSSARY.md
+   ═══════════════════════════════════════════════════════════════════════ */
 import { memo, useCallback, useMemo, useState } from 'react';
 import products from '../../data/products.json';
 
-// Artificially slow function so the effect of useMemo is visible.
+// ─── ① expensiveTotal — artificially slow so useMemo's effect is visible ───
 function expensiveTotal(items) {
   const t0 = performance.now();
   while (performance.now() - t0 < 120) {
@@ -16,6 +47,7 @@ function expensiveTotal(items) {
   return items.reduce((sum, p) => sum + p.price, 0);
 }
 
+// ─── ② ProductRow — a row wrapped in React.memo ───
 // React.memo: skips re-rendering when props are SHALLOW-EQUAL to last time.
 // ≈ OnPush change detection. Works only if props keep stable references!
 const ProductRow = memo(function ProductRow({ product, onBuy }) {
@@ -32,6 +64,7 @@ const ProductRow = memo(function ProductRow({ product, onBuy }) {
   );
 });
 
+// ─── ③ MemoizationDemo — state + useMemo + useCallback wiring ───
 export default function MemoizationDemo() {
   const [category, setCategory] = useState('Electronics');
   const [dark, setDark] = useState(true); // unrelated state to force re-renders
@@ -56,6 +89,7 @@ export default function MemoizationDemo() {
     <>
       <h2>10 · Memoization</h2>
 
+      {/* ─── ④ The interactive card — buttons, toggle, memoized rows ─── */}
       <div className="card">
         <h3>Try it: the unrelated toggle should NOT re-render rows</h3>
         {['Electronics', 'Home', 'Fitness'].map((c) => (
@@ -80,6 +114,7 @@ export default function MemoizationDemo() {
         <p className="muted">Bought ids: {bought.join(', ') || '(none)'}</p>
       </div>
 
+      {/* ─── ⑤ The cheat card — what makes memo actually work ─── */}
       <div className="card">
         <h3>The dependency chain that makes memo work</h3>
         <pre>{`memo(Child) only helps if EVERY prop is reference-stable:

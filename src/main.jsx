@@ -1,3 +1,12 @@
+/* ─────────────────────────────────────────────────────────────────────
+   📖 WHAT THIS FILE IS — main.jsx
+   The app's ignition key: runs once when the page loads, finds the empty
+   <div id="root"> in index.html, and renders the whole app into it.
+   The wrappers around <App /> give every component access to Redux
+   (Provider) and URL routing (BrowserRouter).
+   Full plain-language tour of how these files connect:
+   docs/HOW_THE_APP_WORKS.md
+   ───────────────────────────────────────────────────────────────────── */
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';

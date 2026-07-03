@@ -1,3 +1,12 @@
+/* ─────────────────────────────────────────────────────────────────────
+   📖 WHAT THIS FILE IS — useFetch.js
+   A reusable custom hook: give it a URL, it returns { data, error,
+   loading } and keeps them up to date, refetching when the URL changes.
+   Used by: CustomHooksDemo.jsx (posts list).
+   Why it exists: every component that fetches needs the same three
+   states — write that dance once. How: an effect runs fetch with an
+   AbortController and cancels the stale request on url change/unmount.
+   ───────────────────────────────────────────────────────────────────── */
 import { useEffect, useState } from 'react';
 
 /**

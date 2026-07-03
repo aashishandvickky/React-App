@@ -1,11 +1,35 @@
-/**
- * CONCEPT 05 — FORMS: controlled vs uncontrolled
- * Angular has ReactiveForms/ngModel. React has neither — a controlled input
- * is just: value={state} + onChange={setState}. Validation is plain JS.
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 05 · Forms (Forms.jsx)
+
+   WHAT YOU SEE IN THE BROWSER
+   Two forms — a controlled enrollment form with live validation and a live
+   JSON view of its state, and an uncontrolled name form read via a ref —
+   plus a card naming the form libraries real projects use.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① ControlledForm   — React state holds every field's value; validation
+      is recomputed each render (no FormGroup, no ngModel — just JS)
+   ② UncontrolledForm — the DOM holds the value; a ref reads it on submit
+   ③ The page component — stacks both forms…
+   ④ …and a card: the libraries interviews expect you to name
+
+   INGREDIENTS USED HERE (what & why)
+   • useState          — the form values live in React state (controlled)
+   • controlled input  — value={state} + onChange={handler}; the input
+                         shows whatever state holds — state is the truth
+   • derived validation— errors computed from state every render, not stored
+   • useRef            — a handle to a real DOM node; read .current.value
+                         on demand (uncontrolled — the DOM is the truth)
+   • e.preventDefault()— stops the browser's full-page form submit
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one form/card on screen. Read NOTES.md in this
+   folder for the theory. Confused by a word? → docs/GLOSSARY.md
+   ═══════════════════════════════════════════════════════════════════════ */
 import { useRef, useState } from 'react';
 
-// ---------- Controlled form (the default choice) -----------------------
+// ─── ① ControlledForm — state-driven, the default choice ───
 function ControlledForm() {
   // One state object for the whole form (or one useState per field — both fine).
   const [form, setForm] = useState({ name: '', email: '', tier: 'Base', agree: false });
@@ -67,7 +91,7 @@ function ControlledForm() {
   );
 }
 
-// ---------- Uncontrolled form (refs) ------------------------------------
+// ─── ② UncontrolledForm — DOM-driven, read via a ref ───
 function UncontrolledForm() {
   // The DOM owns the value; we read it on demand via a ref.
   // Use for: file inputs (always uncontrolled), quick one-shot forms,
@@ -91,12 +115,14 @@ function UncontrolledForm() {
   );
 }
 
+// ─── ③ The page component — stacks both forms ───
 export default function Forms() {
   return (
     <>
       <h2>05 · Forms</h2>
       <ControlledForm />
       <UncontrolledForm />
+      {/* ─── ④ A card: what real projects use instead of hand-rolled forms ─── */}
       <div className="card">
         <h3>Real projects</h3>
         <p className="muted">

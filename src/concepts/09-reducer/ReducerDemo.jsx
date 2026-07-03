@@ -1,12 +1,39 @@
-/**
- * CONCEPT 09 — useReducer
- * useState's big sibling for COMPLEX state: multiple sub-values, transitions
- * that depend on each other, or many update kinds. Same pattern as Redux /
- * NgRx, but local to one component. Also the stepping stone to Redux (concept 14).
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 09 · useReducer (ReducerDemo.jsx)
+
+   WHAT YOU SEE IN THE BROWSER
+   A working todo list (add, check off, delete, clear done) plus a cheat
+   card comparing useState and useReducer. Every click on the todo list
+   dispatches an action — watch the "remaining" count update.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① todosReducer — a PURE function (state, action) → newState. All the
+      update logic lives here: added / toggled / deleted / cleared_done.
+   ② ReducerDemo — the component: wires useReducer to the reducer, plus
+      handleAdd which reads the form and dispatches an 'added' action.
+   ③ The todo-list card — the form and the <ul>; each checkbox / ✕
+      button dispatches its own action instead of setting state directly.
+   ④ The cheat card — when to pick useState vs useReducer.
+
+   INGREDIENTS USED HERE (what & why)
+   • useReducer — useState's big sibling for COMPLEX state: many related
+     transitions, next state depending on previous. Same pattern as
+     Redux/NgRx but local to one component — the stepping stone to
+     concept 14 (Redux Toolkit).
+   • dispatch   — sends an action OBJECT describing "what happened";
+     the reducer decides how state changes. Its identity never changes.
+   • JSON stub data — initialTodos imported from src/data/todos.json
+     (this app has no backend by design).
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one section on screen. Read NOTES.md in this
+   folder for the theory. Confused by a word? → docs/GLOSSARY.md
+   ═══════════════════════════════════════════════════════════════════════ */
 import { useReducer } from 'react';
 import initialTodos from '../../data/todos.json';
 
+// ─── ① todosReducer — all update logic in one pure function ───
 // The REDUCER: (state, action) -> newState. MUST be pure:
 // no mutation, no side effects, no Date.now()/random inside.
 // All update logic lives here — testable without rendering anything.
@@ -26,6 +53,7 @@ function todosReducer(state, action) {
   }
 }
 
+// ─── ② ReducerDemo — wire useReducer + the add handler ───
 export default function ReducerDemo() {
   // dispatch sends an action OBJECT describing "what happened";
   // the reducer decides how state changes. Compare with useState where
@@ -46,6 +74,7 @@ export default function ReducerDemo() {
     <>
       <h2>09 · useReducer</h2>
 
+      {/* ─── ③ The todo-list card — every change is a dispatched action ─── */}
       <div className="card">
         <h3>Todo list — every change is a dispatched action</h3>
         <form onSubmit={handleAdd}>
@@ -80,6 +109,7 @@ export default function ReducerDemo() {
         <p className="muted">{remaining} remaining (derived in render — not stored!)</p>
       </div>
 
+      {/* ─── ④ The cheat card — useState vs useReducer ─── */}
       <div className="card">
         <h3>useState vs useReducer</h3>
         <pre>{`useState   → independent simple values (an input, a toggle)

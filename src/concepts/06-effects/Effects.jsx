@@ -1,12 +1,40 @@
-/**
- * CONCEPT 06 — useEffect & LIFECYCLE
- * The hook people misuse most. Effects synchronize your component with
- * OUTSIDE systems (network, timers, subscriptions, the document).
- * They are NOT "lifecycle methods" — though deps let you emulate them.
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 06 · useEffect & Lifecycle (Effects.jsx)
+
+   WHAT YOU SEE IN THE BROWSER
+   Four cards: two counter buttons with a log showing which effects fire,
+   a live clock you can mount/unmount, a short list of posts fetched from
+   a JSON file, and a cheat card on when NOT to use an effect.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① DependencyDemo — two counters + a log proving WHEN each of three
+      effects re-runs (no array / empty [] / [a]).
+   ② Clock — starts a 1-second timer and cleans it up on unmount.
+   ③ CleanupDemo — a button that mounts/unmounts the Clock so you can
+      watch the cleanup actually happen.
+   ④ FetchDemo — the classic "fetch data on mount" pattern, with
+      AbortController to cancel a request mid-flight.
+   ⑤ Effects — the page component that stacks the demos in order.
+   ⑥ A cheat card: cases where an effect is the WRONG tool.
+
+   INGREDIENTS USED HERE (what & why)
+   • useEffect — run code AFTER render to sync with OUTSIDE systems
+     (timers, fetch, the document). The hook people misuse most: it is
+     NOT "lifecycle methods", though deps let you emulate ngOnInit ([])
+     and ngOnChanges ([a]).
+   • useState  — the counters, the log lines, the clock time, the posts,
+     and the loading/error status.
+   • Cleanup functions — the `return () => …` inside an effect
+     ≈ ngOnDestroy, but it also runs before every re-run of that effect.
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one section on screen. Read NOTES.md in this
+   folder for the theory. Confused by a word? → docs/GLOSSARY.md
+   ═══════════════════════════════════════════════════════════════════════ */
 import { useEffect, useState } from 'react';
 
-// ---------- Dependency array = when the effect re-runs ------------------
+// ─── ① DependencyDemo — dependency array = when the effect re-runs ───
 function DependencyDemo() {
   const [a, setA] = useState(0);
   const [b, setB] = useState(0);
@@ -39,7 +67,7 @@ function DependencyDemo() {
   );
 }
 
-// ---------- Cleanup (≈ ngOnDestroy, but per effect-run) ------------------
+// ─── ② Clock — timer with cleanup (≈ ngOnDestroy, but per effect-run) ───
 function Clock() {
   const [now, setNow] = useState(() => new Date());
 
@@ -54,6 +82,7 @@ function Clock() {
   return <p>⏰ {now.toLocaleTimeString()}</p>;
 }
 
+// ─── ③ CleanupDemo — the button that mounts/unmounts the Clock ───
 function CleanupDemo() {
   const [mounted, setMounted] = useState(true);
   return (
@@ -68,7 +97,7 @@ function CleanupDemo() {
   );
 }
 
-// ---------- Fetching with an effect (the canonical pattern) --------------
+// ─── ④ FetchDemo — fetching with an effect (the canonical pattern) ───
 function FetchDemo() {
   const [posts, setPosts] = useState([]);
   const [status, setStatus] = useState('loading'); // loading | error | ready
@@ -110,6 +139,7 @@ function FetchDemo() {
   );
 }
 
+// ─── ⑤ Effects — the page component that stacks the demos in order ───
 export default function Effects() {
   return (
     <>
@@ -117,6 +147,7 @@ export default function Effects() {
       <DependencyDemo />
       <CleanupDemo />
       <FetchDemo />
+      {/* ─── ⑥ Cheat card — cases where an effect is the WRONG tool ─── */}
       <div className="card">
         <h3>When NOT to use an effect (huge interview signal)</h3>
         <pre>{`// ❌ deriving state in an effect — extra render, sync bugs

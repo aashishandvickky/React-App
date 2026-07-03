@@ -1,3 +1,12 @@
+/* ─────────────────────────────────────────────────────────────────────
+   📖 WHAT THIS FILE IS — useDebouncedValue.js
+   A reusable custom hook: give it a fast-changing value, it returns a
+   copy that only updates after the value stops changing for X ms.
+   Used by: CustomHooksDemo.jsx (search box) and the capstone (19).
+   Why it exists: avoid firing expensive work (searches, filters) on
+   every keystroke. How: an effect starts a timer on each change and
+   the cleanup cancels the previous one — only the last timer fires.
+   ───────────────────────────────────────────────────────────────────── */
 import { useEffect, useState } from 'react';
 
 /**

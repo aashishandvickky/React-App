@@ -1,3 +1,12 @@
+/* ─────────────────────────────────────────────────────────────────────
+   📖 WHAT THIS FILE IS — registry.jsx
+   The app's table of contents: one array entry per concept, each with a
+   URL path, a sidebar title, and a lazily-loaded component. App.jsx
+   loops over this array to build BOTH the sidebar links AND the routes.
+   Add a new entry here and a new page appears automatically.
+   Full plain-language tour of how these files connect:
+   docs/HOW_THE_APP_WORKS.md
+   ───────────────────────────────────────────────────────────────────── */
 import { lazy } from 'react';
 
 /**

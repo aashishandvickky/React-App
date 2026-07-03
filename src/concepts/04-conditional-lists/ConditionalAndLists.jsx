@@ -1,10 +1,35 @@
-/**
- * CONCEPT 04 — CONDITIONAL RENDERING & LISTS (keys!)
- * *ngIf → ternary / &&      *ngFor → array.map() + key
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 04 · Conditionals & Lists (ConditionalAndLists.jsx)
+
+   WHAT YOU SEE IN THE BROWSER
+   A page with 2 cards: status buttons that swap between a spinner, an
+   error, and a todo list; and an interactive demo where index keys make
+   your typed text stick to the wrong row.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① ConditionalPatterns — three *ngIf-style ways to show/hide UI
+      (ternary, &&, and a guarded block for the multi-branch case)
+   ② KeysDemo — a list of rows with inputs; toggle between index keys
+      (buggy) and stable id keys to SEE why keys matter
+   ③ The page component — just stacks the two cards above
+
+   INGREDIENTS USED HERE (what & why)
+   • useState        — remembers the chosen status, the rows, the checkbox
+   • ternary ? :     — render one thing OR another (*ngIf with else)
+   • && operator     — render something or nothing (beware the "0" trap)
+   • .map() + key    — render a list (*ngFor); key tells React which old
+                       row matches which new row when the list changes
+   • uncontrolled input — the DOM holds the text, which exposes the key bug
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one card on screen. Read NOTES.md in this folder
+   for the theory. Confused by a word? → docs/GLOSSARY.md
+   ═══════════════════════════════════════════════════════════════════════ */
 import { useState } from 'react';
 import todos from '../../data/todos.json';
 
+// ─── ① ConditionalPatterns — three *ngIf-style show/hide patterns ───
 function ConditionalPatterns() {
   const [status, setStatus] = useState('loading'); // 'loading' | 'error' | 'ready'
   const items = status === 'ready' ? todos : [];
@@ -37,6 +62,7 @@ function ConditionalPatterns() {
   );
 }
 
+// ─── ② KeysDemo — interactive proof that index keys break ───
 /**
  * WHY INDEX KEYS BREAK — an interactive proof.
  * Each row has an UNCONTROLLED input (DOM holds the text). Keys tell React
@@ -86,6 +112,7 @@ function KeysDemo() {
   );
 }
 
+// ─── ③ The page component — stacks the two cards ───
 export default function ConditionalAndLists() {
   return (
     <>

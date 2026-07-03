@@ -1,12 +1,47 @@
-/**
- * CONCEPT 12 — PERFORMANCE PATTERNS
- * Beyond memoization (concept 10): code splitting, list virtualization,
- * and state colocation. These are the "how would you optimize a slow
- * React app?" answers.
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 12 · Performance Patterns (PerformanceDemo.jsx)
+
+   Beyond memoization (concept 10): code splitting, list virtualization,
+   and state colocation. These are the "how would you optimize a slow
+   React app?" answers.
+
+   WHAT YOU SEE IN THE BROWSER
+   Three cards: a button that downloads and shows a chart on demand, a
+   scrollable list that claims 10,000 rows, and a text explanation of
+   state colocation. A final card lists the interview checklist.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① Code splitting — HeavyChart.jsx (sibling file) is imported with
+      lazy(), so it lives in its own JS chunk; CodeSplittingDemo renders
+      it inside <Suspense> only after you click the button
+   ② VirtualListDemo — a hand-rolled "windowed" list: 10,000 rows exist
+      in an array, but only the ~12 rows inside the scroll viewport are
+      actually put in the DOM (computed from the scroll position)
+   ③ StateColocationDemo — no interactivity, just a card of text about
+      keeping state in the smallest component that needs it
+   ④ PerformanceDemo — the page component: assembles ①–③ and ends
+      with the "app is slow, what do you do?" interview checklist card
+
+   INGREDIENTS USED HERE (what & why)
+   • lazy — tells the bundler "put HeavyChart in a separate file,
+     download it the first time it renders" (① )
+   • Suspense — shows a fallback ("Downloading chunk…") while that
+     lazy chunk is still on the network (①)
+   • useState — the show/hide flag in ① and the scroll position in ②
+   • useMemo — builds the 10,000-row array once instead of on every
+     render (②)
+   • event handlers (onClick, onScroll) — flip the flag in ①, record
+     scrollTop in ②
+   • list rendering (.map + key) — draws the visible slice of rows in ②
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one section on screen. Read NOTES.md in this
+   folder for the theory. Confused by a word? → docs/GLOSSARY.md
+   ═══════════════════════════════════════════════════════════════════════ */
 import { Suspense, lazy, useMemo, useState } from 'react';
 
-// ---------- 1) Code splitting with lazy/Suspense --------------------------
+// ─── ① Code splitting with lazy + Suspense ───
 // This chart component is in its own chunk; it downloads only when rendered.
 // (Every sidebar page in this app is ALSO lazy — see registry.jsx.)
 const HeavyChart = lazy(() => import('./HeavyChart.jsx'));
@@ -29,7 +64,7 @@ function CodeSplittingDemo() {
   );
 }
 
-// ---------- 2) Windowing / virtualization (hand-rolled mini version) -----
+// ─── ② Windowing / virtualization (hand-rolled mini version) ───
 // Real apps use react-window / @tanstack/react-virtual — but interviewers
 // love asking HOW it works: render only the rows inside the viewport.
 function VirtualListDemo() {
@@ -73,7 +108,7 @@ function VirtualListDemo() {
   );
 }
 
-// ---------- 3) State colocation ------------------------------------------
+// ─── ③ State colocation — the cheapest optimization ───
 function StateColocationDemo() {
   return (
     <div className="card">
@@ -90,6 +125,7 @@ that didn't re-render are reused as-is.`}</pre>
   );
 }
 
+// ─── ④ The page — assembles ①–③ plus the interview checklist ───
 export default function PerformanceDemo() {
   return (
     <>
@@ -97,6 +133,7 @@ export default function PerformanceDemo() {
       <CodeSplittingDemo />
       <VirtualListDemo />
       <StateColocationDemo />
+      {/* ─── ④ Interview checklist card ─── */}
       <div className="card">
         <h3>The interview checklist for "app is slow, what do you do?"</h3>
         <pre>{`1. MEASURE — React DevTools Profiler; find what re-renders and why

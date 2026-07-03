@@ -1,10 +1,47 @@
-/**
- * CONCEPT 16 — ERROR BOUNDARIES & CLASS COMPONENTS
- * Two interview topics in one, because error boundaries are the ONE thing
- * that still REQUIRES a class component (no hook equivalent yet).
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 16 · Error Boundaries & Class Components
+
+   WHAT YOU SEE IN THE BROWSER
+   A points widget that deliberately crashes on the 3rd click — but the
+   crash stays inside its card (fallback UI + "Try again" button) while
+   the rest of the page keeps working. A second button throws inside an
+   onClick to prove boundaries do NOT catch handler errors.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① ErrorBoundary — a CLASS component (the one place classes are still
+      required). Catches render errors from its children and shows a
+      fallback UI with a retry button instead of a blank page.
+   ② BuggyPointsWidget — a normal function component that throws DURING
+      RENDER once points pass 300. This is the kind of error ① catches.
+   ③ HandlerErrorWidget — throws inside an onClick handler; boundaries
+      never see that, so plain try/catch handles it locally.
+   ④ ErrorBoundaryDemo — the page. Wraps ② in ①, shows ③ unwrapped,
+      and ends with a caught / not-caught cheat-sheet card.
+
+   INGREDIENTS USED HERE (what & why)
+   • class Component — error boundaries have NO hook equivalent, so this
+     is the one class component in the whole app. Anatomy: this.state,
+     this.setState (merges!), and a render() method that returns JSX.
+   • static getDerivedStateFromError — called when a child throws during
+     render; returns new state that switches on the fallback UI.
+   • componentDidCatch — called after the error commits; the place to
+     log to Sentry/Datadog (side effects allowed here).
+   • useState — powers the two small function-component widgets.
+   • try/catch — the correct tool for event-handler errors (③).
+     (Angular analogy: a scoped, declarative ErrorHandler for one
+     subtree instead of one global handler.)
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one section on screen. Read NOTES.md in this
+   folder for the theory. Confused by a word? → docs/GLOSSARY.md
+
+   Two interview topics in one, because error boundaries are the ONE thing
+   that still REQUIRES a class component (no hook equivalent yet).
+   ═══════════════════════════════════════════════════════════════════════ */
 import { Component, useState } from 'react';
 
+// ─── ① ErrorBoundary — the class component that catches render crashes ───
 /**
  * A CLASS COMPONENT — know the anatomy even if you'll rarely write one:
  * state in this.state, updates via this.setState (merges, unlike useState),
@@ -46,6 +83,7 @@ class ErrorBoundary extends Component {
   }
 }
 
+// ─── ② BuggyPointsWidget — throws during render (boundaries catch this) ───
 /** A component that can throw DURING RENDER (what boundaries catch). */
 function BuggyPointsWidget() {
   const [points, setPoints] = useState(100);
@@ -62,6 +100,7 @@ function BuggyPointsWidget() {
   );
 }
 
+// ─── ③ HandlerErrorWidget — onClick errors need try/catch, not boundaries ───
 function HandlerErrorWidget() {
   const [caught, setCaught] = useState(null);
   return (
@@ -85,6 +124,7 @@ function HandlerErrorWidget() {
   );
 }
 
+// ─── ④ ErrorBoundaryDemo — the page: boundary-wrapped widget + cheat sheet ───
 export default function ErrorBoundaryDemo() {
   return (
     <>

@@ -1,11 +1,48 @@
-/**
- * CONCEPT 15 — DATA FETCHING PATTERNS
- * All data comes from static JSON in /public/data — no server, no DB.
- * Covers: the race condition every senior interview asks about, and
- * dependent (waterfall vs parallel) requests.
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 15 · Data Fetching (DataFetching.jsx)
+
+   WHAT YOU SEE IN THE BROWSER
+   Two interactive cards: a search box that demonstrates the classic
+   "stale response" race condition (with a checkbox to turn the fix on),
+   and two buttons that load data sequentially vs in parallel and show
+   the timing difference. A final card lists the real-world tools.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① slowFetch — a helper that adds random delay to fetch(), so the
+      race condition is easy to reproduce on purpose.
+   ② RaceConditionDemo — the search card. Typing fires one request per
+      keystroke; with random latency an OLD request can finish LAST and
+      overwrite the correct results. The checkbox enables the fix:
+      AbortController cancels the stale request in the effect cleanup.
+   ③ ParallelDemo — the waterfall-vs-parallel card. Two independent
+      requests: `await` one after the other (slow) vs Promise.all (fast).
+   ④ DataFetching — the page component. Stacks ② and ③ plus a card on
+      what production apps actually use (TanStack Query / SWR / RTK Query).
+
+   INGREDIENTS USED HERE (what & why)
+   • useState — holds the search term, results, and timing numbers.
+   • useEffect — runs the fetch when `term` changes; its CLEANUP function
+     aborts the previous request (this is the whole race-condition fix).
+   • AbortController — browser API to cancel an in-flight fetch; its
+     `signal` is passed into fetch(). (Angular: like unsubscribing /
+     switchMap cancelling the previous HTTP request.)
+   • Promise.all — fires independent requests together instead of one
+     after another.
+   • fetch of static JSON — /public/data/*.json acts as a fake API;
+     there is no real server in this project.
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one section on screen. Read NOTES.md in this
+   folder for the theory. Confused by a word? → docs/GLOSSARY.md
+
+   All data comes from static JSON in /public/data — no server, no DB.
+   Covers: the race condition every senior interview asks about, and
+   dependent (waterfall vs parallel) requests.
+   ═══════════════════════════════════════════════════════════════════════ */
 import { useEffect, useState } from 'react';
 
+// ─── ① slowFetch — a fetch() with random delay ───
 // Simulated variable network latency so races are reproducible.
 function slowFetch(url, signal) {
   const delay = 300 + Math.random() * 1200;
@@ -18,6 +55,7 @@ function slowFetch(url, signal) {
   });
 }
 
+// ─── ② RaceConditionDemo — the search card with the stale-response bug ───
 /**
  * THE RACE CONDITION.
  * Type "use" quickly: requests for "u", "us", "use" all fly. With random
@@ -79,6 +117,7 @@ function RaceConditionDemo() {
   );
 }
 
+// ─── ③ ParallelDemo — waterfall vs Promise.all ───
 /** Waterfall vs parallel — Promise.all */
 function ParallelDemo() {
   const [data, setData] = useState(null);
@@ -117,6 +156,7 @@ function ParallelDemo() {
   );
 }
 
+// ─── ④ DataFetching — the page: stacks the demos + "real tools" card ───
 export default function DataFetching() {
   return (
     <>

@@ -1,8 +1,12 @@
-/**
- * A pretend-heavy component. It only exists to be code-split:
- * imported via lazy(() => import('./HeavyChart.jsx')), so Vite puts it
- * in a separate chunk that downloads on first render.
- */
+/* ─────────────────────────────────────────────────────────────────────
+   📖 WHAT THIS FILE IS — HeavyChart.jsx
+   A pretend-"heavy" component: a tiny CSS bar chart built from the
+   stub product data, no chart library involved.
+   Used by: PerformanceDemo.jsx (loaded on button click).
+   Why it exists: to be code-split — imported via lazy(() =>
+   import('./HeavyChart.jsx')), so Vite puts it in a separate JS chunk.
+   How: the chunk downloads only the first time the component renders.
+   ───────────────────────────────────────────────────────────────────── */
 import products from '../../data/products.json';
 
 export default function HeavyChart() {

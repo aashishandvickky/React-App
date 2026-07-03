@@ -1,3 +1,14 @@
+/* ─────────────────────────────────────────────────────────────────────
+   📖 WHAT THIS FILE IS — catalogSlice.js
+   The ASYNC half of the Redux demo: a slice whose data comes from a
+   fetch, driven by a createAsyncThunk (fetchCatalog).
+   Used by: store.js (registers the reducer) and ReduxDemo.jsx
+   (CatalogPanel dispatches fetchCatalog and reads selectCatalog).
+   Why it exists: to show how Redux tracks loading/succeeded/failed.
+   How: the thunk auto-dispatches pending/fulfilled/rejected actions
+   and extraReducers maps each one onto status/items/error state.
+   ───────────────────────────────────────────────────────────────────── */
+
 /**
  * ASYNC REDUX — createAsyncThunk.
  * A thunk dispatches pending/fulfilled/rejected actions around an async

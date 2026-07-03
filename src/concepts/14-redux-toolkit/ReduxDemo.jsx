@@ -1,15 +1,54 @@
-/**
- * CONCEPT 14 — REDUX TOOLKIT (RTK)
- * Files in this folder tell the whole story:
- *   store.js        — configureStore (provided in main.jsx)
- *   walletSlice.js  — createSlice: state + reducers + actions + selectors
- *   catalogSlice.js — createAsyncThunk: async lifecycle
- *   this file       — components consuming it via useSelector/useDispatch
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   📖 BEGINNER'S MAP — 14 · Redux Toolkit (ReduxDemo.jsx)
+
+   Files in this folder tell the whole story:
+     store.js        — configureStore (provided in main.jsx)
+     walletSlice.js  — createSlice: state + reducers + actions + selectors
+     catalogSlice.js — createAsyncThunk: async lifecycle
+     this file       — components consuming it via useSelector/useDispatch
+
+   WHAT YOU SEE IN THE BROWSER
+   A points wallet with Earn / Redeem / Reset buttons, a history list
+   that appears once you click, and a "Fetch catalog" button that shows
+   the loading → success/failure lifecycle of an async thunk.
+
+   WHAT'S IN THIS FILE, TOP TO BOTTOM
+   ① WalletPanel — reads the balance with useSelector(selectPoints) and
+      dispatches the sync actions earned / redeemed / reset from
+      walletSlice.js
+   ② HistoryPanel — a SEPARATE useSelector subscription (selectHistory);
+      proves each component re-renders only when ITS slice of state
+      changes
+   ③ CatalogPanel — dispatches the fetchCatalog async thunk from
+      catalogSlice.js and renders its status: loading / failed /
+      succeeded
+   ④ ReduxDemo — the page component: assembles ①–③ and ends with the
+      one-way-data-loop card (the interview answer)
+
+   INGREDIENTS USED HERE (what & why)
+   • useSelector — subscribe a component to one piece of store state;
+     re-renders only when that value changes (①, ②, ③)
+   • useDispatch — get the dispatch function to send actions to the
+     store (①, ③)
+   • slice actions (earned, redeemed, reset) — auto-generated action
+     creators from walletSlice.js; dispatching them runs the reducers
+   • selectors (selectPoints, selectHistory, selectCatalog) — small
+     functions that know the state shape so components don't have to
+   • fetchCatalog (async thunk) — one dispatch that emits pending /
+     fulfilled / rejected actions around a fetch (③)
+   • conditional rendering + .map/key — show error / list per status
+     (②, ③)
+
+   HOW TO READ THIS FILE
+   Open the page in the browser next to this file. Each numbered marker
+   below (①, ②, …) matches one section on screen. Read NOTES.md in this
+   folder for the theory. Confused by a word? → docs/GLOSSARY.md
+   ═══════════════════════════════════════════════════════════════════════ */
 import { useDispatch, useSelector } from 'react-redux';
 import { earned, redeemed, reset, selectPoints, selectHistory } from './walletSlice.js';
 import { fetchCatalog, selectCatalog } from './catalogSlice.js';
 
+// ─── ① Wallet panel — sync actions (earned / redeemed / reset) ───
 function WalletPanel() {
   // useSelector SUBSCRIBES this component to the store: it re-renders ONLY
   // when the selected value changes (reference/strict equality) — this
@@ -34,6 +73,7 @@ function WalletPanel() {
   );
 }
 
+// ─── ② History panel — an independent store subscription ───
 // Separate component to show independent subscription: WalletPanel does NOT
 // re-render when only history changes elsewhere (and vice versa).
 function HistoryPanel() {
@@ -53,6 +93,7 @@ function HistoryPanel() {
   );
 }
 
+// ─── ③ Catalog panel — async thunk lifecycle ───
 function CatalogPanel() {
   const { items, status, error } = useSelector(selectCatalog);
   const dispatch = useDispatch();
@@ -75,6 +116,7 @@ function CatalogPanel() {
   );
 }
 
+// ─── ④ The page — assembles ①–③ plus the data-loop card ───
 export default function ReduxDemo() {
   return (
     <>
@@ -82,6 +124,7 @@ export default function ReduxDemo() {
       <WalletPanel />
       <HistoryPanel />
       <CatalogPanel />
+      {/* ─── ④ The one-way data loop (interview answer) ─── */}
       <div className="card">
         <h3>The one-way data loop (say this out loud in interviews)</h3>
         <pre>{`UI event → dispatch(action) → middleware (thunks) → reducers

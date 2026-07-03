@@ -1,3 +1,14 @@
+/* ─────────────────────────────────────────────────────────────────────
+   📖 WHAT THIS FILE IS — walletSlice.js
+   The SYNC half of the Redux demo: the points wallet feature — its
+   state, its reducers, its auto-generated actions, and its selectors.
+   Used by: store.js (registers the reducer) and ReduxDemo.jsx
+   (WalletPanel/HistoryPanel dispatch and select from it).
+   Why it exists: one self-contained file per feature is the RTK way.
+   How: createSlice turns the reducers object into action creators and
+   a reducer; Immer makes the "mutating" code produce immutable state.
+   ───────────────────────────────────────────────────────────────────── */
+
 /**
  * A SLICE = state + reducers + auto-generated actions for one feature.
  * createSlice kills the old Redux boilerplate (action constants, action
