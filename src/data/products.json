@@ -1,0 +1,14 @@
+[
+  { "id": 1,  "name": "Wireless Headphones", "category": "Electronics", "price": 129.99, "points": 1300, "stock": 12 },
+  { "id": 2,  "name": "Espresso Machine",    "category": "Home",        "price": 249.0,  "points": 2500, "stock": 4 },
+  { "id": 3,  "name": "Yoga Mat",            "category": "Fitness",     "price": 35.5,   "points": 360,  "stock": 30 },
+  { "id": 4,  "name": "Mechanical Keyboard", "category": "Electronics", "price": 89.99,  "points": 900,  "stock": 9 },
+  { "id": 5,  "name": "Running Shoes",       "category": "Fitness",     "price": 110.0,  "points": 1100, "stock": 15 },
+  { "id": 6,  "name": "Air Fryer",           "category": "Home",        "price": 99.0,   "points": 990,  "stock": 7 },
+  { "id": 7,  "name": "Smart Watch",         "category": "Electronics", "price": 199.99, "points": 2000, "stock": 6 },
+  { "id": 8,  "name": "Water Bottle",        "category": "Fitness",     "price": 18.0,   "points": 180,  "stock": 50 },
+  { "id": 9,  "name": "Desk Lamp",           "category": "Home",        "price": 42.0,   "points": 420,  "stock": 21 },
+  { "id": 10, "name": "Bluetooth Speaker",   "category": "Electronics", "price": 65.0,   "points": 650,  "stock": 11 },
+  { "id": 11, "name": "Resistance Bands",    "category": "Fitness",     "price": 22.5,   "points": 230,  "stock": 40 },
+  { "id": 12, "name": "Chef Knife",          "category": "Home",        "price": 75.0,   "points": 750,  "stock": 13 }
+]

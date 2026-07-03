@@ -1,0 +1,10 @@
+[
+  { "id": "M-1001", "name": "Aarav Mehta",   "tier": "Gold",     "points": 15400, "joined": "2021-03-14", "email": "aarav@example.com" },
+  { "id": "M-1002", "name": "Sofia Rossi",   "tier": "Silver",   "points": 6200,  "joined": "2022-07-01", "email": "sofia@example.com" },
+  { "id": "M-1003", "name": "Liam O'Brien",  "tier": "Platinum", "points": 40250, "joined": "2019-11-23", "email": "liam@example.com" },
+  { "id": "M-1004", "name": "Mei Tanaka",    "tier": "Base",     "points": 850,   "joined": "2024-01-09", "email": "mei@example.com" },
+  { "id": "M-1005", "name": "Diego Alvarez", "tier": "Gold",     "points": 18990, "joined": "2020-05-30", "email": "diego@example.com" },
+  { "id": "M-1006", "name": "Priya Nair",    "tier": "Silver",   "points": 7770,  "joined": "2023-02-17", "email": "priya@example.com" },
+  { "id": "M-1007", "name": "Emma Novak",    "tier": "Base",     "points": 1200,  "joined": "2024-06-05", "email": "emma@example.com" },
+  { "id": "M-1008", "name": "Noah Kim",      "tier": "Platinum", "points": 52000, "joined": "2018-08-12", "email": "noah@example.com" }
+]

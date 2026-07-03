@@ -1,0 +1,50 @@
+/* Minimal global styles so demos are readable. Not the point of this repo. */
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --border: #334155;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --good: #4ade80;
+  --bad: #f87171;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
+pre { background: #0b1220; border: 1px solid var(--border); padding: 12px; border-radius: 8px; overflow-x: auto; }
+
+.layout { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 280px; flex-shrink: 0; padding: 16px;
+  border-right: 1px solid var(--border); background: var(--panel);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+.sidebar h1 { font-size: 1rem; color: var(--accent); }
+.sidebar nav { display: flex; flex-direction: column; gap: 2px; }
+.sidebar nav a { padding: 6px 10px; border-radius: 6px; color: var(--muted); font-size: 0.85rem; }
+.sidebar nav a.active { background: #0b1220; color: var(--accent); font-weight: 600; }
+.content { flex: 1; padding: 24px 32px; max-width: 900px; }
+
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin: 12px 0; }
+.card h3 { margin-top: 0; }
+button {
+  background: var(--accent); color: #082f49; border: none; border-radius: 6px;
+  padding: 6px 14px; font-weight: 600; cursor: pointer; margin: 2px;
+}
+button.secondary { background: var(--border); color: var(--text); }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+input, select, textarea {
+  background: #0b1220; color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; padding: 6px 10px; margin: 2px;
+}
+label { display: block; margin: 8px 0 2px; color: var(--muted); font-size: 0.85rem; }
+.error { color: var(--bad); }
+.success { color: var(--good); }
+.muted { color: var(--muted); font-size: 0.85rem; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; font-size: 0.9rem; }
+.badge { background: #0b1220; border: 1px solid var(--border); border-radius: 99px; padding: 2px 10px; font-size: 0.75rem; }

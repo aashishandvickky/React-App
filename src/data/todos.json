@@ -1,0 +1,7 @@
+[
+  { "id": 1, "text": "Read JSX basics notes",          "done": true },
+  { "id": 2, "text": "Understand controlled inputs",   "done": true },
+  { "id": 3, "text": "Master useEffect cleanup",       "done": false },
+  { "id": 4, "text": "Practice useReducer",            "done": false },
+  { "id": 5, "text": "Revise reconciliation & keys",   "done": false }
+]

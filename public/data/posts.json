@@ -1,0 +1,8 @@
+[
+  { "id": 1, "title": "Why keys matter in lists",            "author": "M-1001", "body": "React uses keys to match old and new children during reconciliation. Index keys break when the list reorders." },
+  { "id": 2, "title": "Stale closures in useEffect",         "author": "M-1003", "body": "An effect captures the props/state from the render it was created in. Missing deps means reading old values forever." },
+  { "id": 3, "title": "Controlled vs uncontrolled forms",    "author": "M-1002", "body": "Controlled inputs keep the value in React state; uncontrolled inputs keep it in the DOM and are read via refs." },
+  { "id": 4, "title": "When useMemo actually helps",         "author": "M-1005", "body": "Memoization is a trade: it costs memory and comparison time. Use it for expensive computations or referential stability." },
+  { "id": 5, "title": "Lifting state up",                    "author": "M-1006", "body": "When two siblings need the same data, move the state to their closest common parent and pass it down as props." },
+  { "id": 6, "title": "Error boundaries only catch renders", "author": "M-1008", "body": "Event handlers, async code and SSR errors are NOT caught by error boundaries. Use try/catch there instead." }
+]
