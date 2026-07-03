@@ -106,6 +106,10 @@ browser tab does *not* stop the server — it keeps running until you stop it he
 
 ## How to use this repo
 
+**App running? Your next stop is [`docs/START_HERE.md`](docs/START_HERE.md)** — a
+plain-language guided path through everything here (what to study in which order, how
+to study it, and checkpoints to know it's sticking).
+
 1. Run the app and open a concept page in the sidebar.
 2. Open the matching folder in `src/concepts/<nn-name>/` — read `NOTES.md` first,
    then the `.jsx` with its comments, then interact with the demo.
@@ -137,6 +141,17 @@ browser tab does *not* stop the server — it keeps running until you stop it he
 | 19 | ★ Capstone | everything composed into one feature + exercises |
 
 ## Reference docs (`docs/`)
+
+Start with the beginner-friendly four:
+
+- **START_HERE.md** — the guided learning path (read this first)
+- **HOW_THE_APP_WORKS.md** — plain-language tour of how this project's files fit
+  together and what happens at runtime
+- **BUILD_A_FEATURE.md** — build a complete new page yourself, end to end, like a
+  real work ticket
+- **GLOSSARY.md** — every confusing term explained in easy language
+
+Then the deeper references:
 
 - **ANGULAR_TO_REACT.md** — the translation dictionary you'll reach for daily
 - **INTERVIEW_QUESTIONS.md** — 60+ questions with crisp answers, by topic

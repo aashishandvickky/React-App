@@ -39,7 +39,10 @@ npm run build    # production build; each concept becomes its own lazy chunk
   router → Redux Toolkit → data fetching → error boundaries → portals → concurrent →
   capstone (Rewards Store composing everything; on-page exercises)
 - `src/concepts/14-redux-toolkit/store.js` — the Redux store (provided app-wide in main.jsx)
-- `docs/` — ANGULAR_TO_REACT, INTERVIEW_QUESTIONS (52 Q&A + 10 coding challenges),
+- `docs/` — beginner layer (easy language, keep it that way): START_HERE (guided
+  path), HOW_THE_APP_WORKS (runtime tour), BUILD_A_FEATURE (ticket-style Members-page
+  exercise; expects folder `src/concepts/20-members/`), GLOSSARY. Reference layer:
+  ANGULAR_TO_REACT, INTERVIEW_QUESTIONS (52 Q&A + 10 coding challenges),
   HOOKS_CHEATSHEET, RENDERING_AND_RECONCILIATION, TESTING, TYPESCRIPT_WITH_REACT,
   ECOSYSTEM_AND_BEYOND
 
@@ -47,7 +50,9 @@ npm run build    # production build; each concept becomes its own lazy chunk
 
 Built 2026-07-03; build + all tests verified. Git initialized (first commit `ba84d2b`),
 no remote yet. Natural next work: capstone exercises (listed on the capstone page),
-convert one module to TypeScript, add TanStack Query as concept 20, run mock
+convert one module to TypeScript, the guided Members-page ticket in
+`docs/BUILD_A_FEATURE.md` (reserves `src/concepts/20-members/`), add TanStack Query
+as a new concept module, run mock
 interviews from `docs/INTERVIEW_QUESTIONS.md`, or rebuild the capstone as a separate
 Next.js app (planned exercise — see `docs/ECOSYSTEM_AND_BEYOND.md`; this repo itself
 deliberately stays a Vite SPA).
