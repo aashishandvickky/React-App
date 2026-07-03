@@ -26,17 +26,25 @@
    below (①, ②, …) matches one card on screen. Read NOTES.md in this folder
    for the theory. Confused by a word? → docs/GLOSSARY.md
    ═══════════════════════════════════════════════════════════════════════ */
+// Named import of the useState hook — per-component state (≈ a field on an Angular component).
 import { useState } from 'react';
+// Stubbed data: Vite imports JSON as a plain JS array at build time — no HTTP request here.
 import todos from '../../data/todos.json';
 
 // ─── ① ConditionalPatterns — three *ngIf-style show/hide patterns ───
 function ConditionalPatterns() {
+  // Array destructuring: useState returns [currentValue, setterFn]. Calling the setter re-renders.
   const [status, setStatus] = useState('loading'); // 'loading' | 'error' | 'ready'
+  // Derived value via a ternary (cond ? a : b) — recomputed each render, no extra state needed.
   const items = status === 'ready' ? todos : [];
 
   return (
     <div className="card">
       <h3>Conditional patterns (*ngIf equivalents)</h3>
+      {/* .map() = *ngFor: one <button> per status string. key={s} tells React which button is
+          which across renders (the strings are unique and stable, so they make fine keys).
+          onClick gets an ARROW FN so setStatus(s) runs on click, not during render; the
+          className ternary un-greys the active button. */}
       {['loading', 'error', 'ready'].map((s) => (
         <button key={s} className={s === status ? '' : 'secondary'} onClick={() => setStatus(s)}>
           {s}
@@ -53,6 +61,9 @@ function ConditionalPatterns() {
       {/* Pattern 3: early-return / lookup map for multi-branch (ngSwitch) */}
       {status === 'ready' && (
         <ul>
+          {/* key={t.id} — a stable id from the data. Interview: React matches list items by
+              key during reconciliation; index keys break on reorder (proof in the next card).
+              The ternary picks the emoji per row. */}
           {items.map((t) => (
             <li key={t.id}>{t.done ? '✅' : '⬜️'} {t.text}</li>
           ))}
@@ -71,12 +82,17 @@ function ConditionalPatterns() {
  * the POSITION, not the item it belonged to.
  */
 function KeysDemo() {
+  // Two starter rows. Each object carries a stable `id` — the raw material for good keys.
   const [rows, setRows] = useState([
     { id: 1, label: 'Row A' },
     { id: 2, label: 'Row B' },
   ]);
+  // Checkbox state: true = demo the buggy index keys, false = use the stable id keys.
   const [useIndexKeys, setUseIndexKeys] = useState(true);
 
+  // Arrow fn + functional update: setRows gets the CURRENT array (r) and must return a NEW one.
+  // `[newRow, ...r]` spreads the old rows AFTER the new row — an immutable prepend (no push!).
+  // Date.now() = a cheap unique id; the template literal `Row ${…}` builds "Row C", "Row D", …
   const prepend = () =>
     setRows((r) => [{ id: Date.now(), label: `Row ${String.fromCharCode(65 + r.length)}` }, ...r]);
 
@@ -89,6 +105,9 @@ function KeysDemo() {
         <li>Switch to stable id keys and repeat — text follows its row. ✅</li>
       </ol>
       <label>
+        {/* Controlled checkbox: checked={state} + onChange reading e.target.checked (a boolean —
+            checkboxes use .checked, not .value). ≈ [(ngModel)] two-way binding, done by hand.
+            The {' '} after the input is just an explicit space between inline elements. */}
         <input
           type="checkbox"
           checked={useIndexKeys}
@@ -98,9 +117,15 @@ function KeysDemo() {
       </label>
       <button onClick={prepend}>Prepend row</button>
 
+      {/* The experiment: the key flips between array POSITION (index) and the row's id.
+          Interview: React matches old↔new children BY KEY; index keys lie when you add or
+          remove at the front. style={{…}} = inline styles as a JS object (outer {} = JSX,
+          inner {} = the object). */}
       {rows.map((row, index) => (
         <div key={useIndexKeys ? index : row.id} style={{ margin: 4 }}>
           <span className="badge">{row.label}</span>{' '}
+          {/* Uncontrolled input (no value prop): the DOM node keeps the text — so when React
+              reuses the wrong node under an index key, your text visibly sticks to the slot. */}
           <input placeholder={`notes for ${row.label}`} />
         </div>
       ))}
@@ -114,6 +139,7 @@ function KeysDemo() {
 
 // ─── ③ The page component — stacks the two cards ───
 export default function ConditionalAndLists() {
+  // <>…</> is a Fragment: groups children without adding a DOM element (≈ ng-container).
   return (
     <>
       <h2>04 · Conditionals & Lists</h2>

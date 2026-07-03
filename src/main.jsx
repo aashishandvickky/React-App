@@ -7,13 +7,13 @@
    Full plain-language tour of how these files connect:
    docs/HOW_THE_APP_WORKS.md
    ───────────────────────────────────────────────────────────────────── */
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import App from './App.jsx';
-import { store } from './concepts/14-redux-toolkit/store.js';
-import './index.css';
+import React from 'react'; // default import — needed for the <React.StrictMode> tag below
+import { createRoot } from 'react-dom/client'; // { } = named import; React 18 bootstrap API
+import { BrowserRouter } from 'react-router-dom'; // router provider — clean History-API URLs
+import { Provider } from 'react-redux'; // hands the Redux store to every component below it
+import App from './App.jsx'; // the root component (sidebar shell + routes)
+import { store } from './concepts/14-redux-toolkit/store.js'; // the app's single Redux store
+import './index.css'; // side-effect import: no value, just tells Vite to bundle these styles
 
 /**
  * ENTRY POINT — Angular analogy: main.ts + bootstrapApplication().

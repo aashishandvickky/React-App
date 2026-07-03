@@ -8,10 +8,15 @@
    reducer into a branch of the state tree and auto-wires Redux
    DevTools + default middleware (thunk, dev-time immutability checks).
    ───────────────────────────────────────────────────────────────────── */
+// configureStore is RTK's store factory. Interview: it replaces legacy createStore and
+// sets up DevTools + sensible default middleware for free.
 import { configureStore } from '@reduxjs/toolkit';
+// Each slice file default-exports its reducer function, so we choose the import names here.
 import walletReducer from './walletSlice.js';
 import catalogReducer from './catalogSlice.js';
 
+// ONE store per app (NgRx: StoreModule.forRoot). Named export — main.jsx wraps the app in
+// <Provider store={store}> so every component can reach it via hooks.
 export const store = configureStore({
   reducer: {
     // State shape: { wallet: {...}, catalog: {...} }

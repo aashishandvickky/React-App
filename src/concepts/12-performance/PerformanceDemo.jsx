@@ -39,14 +39,19 @@
    below (①, ②, …) matches one section on screen. Read NOTES.md in this
    folder for the theory. Confused by a word? → docs/GLOSSARY.md
    ═══════════════════════════════════════════════════════════════════════ */
+// Named imports from React: lazy + Suspense for code splitting, useState/useMemo for the demos.
 import { Suspense, lazy, useMemo, useState } from 'react';
 
 // ─── ① Code splitting with lazy + Suspense ───
 // This chart component is in its own chunk; it downloads only when rendered.
 // (Every sidebar page in this app is ALSO lazy — see registry.jsx.)
+// import(...) is a DYNAMIC import — a function call returning a Promise of the module.
+// lazy() wraps that Promise-maker into a component React can download on first render.
+// Angular: loadComponent(() => import(...)) in a route config is the same idea.
 const HeavyChart = lazy(() => import('./HeavyChart.jsx'));
 
 function CodeSplittingDemo() {
+  // Array destructuring: useState returns [value, setter]. false = chart not mounted yet.
   const [show, setShow] = useState(false);
   return (
     <div className="card">
@@ -54,7 +59,10 @@ function CodeSplittingDemo() {
       <p className="muted">
         Open DevTools → Network, then click. A separate JS chunk loads on demand.
       </p>
+      {/* onClick arrow function: flips show to true → re-render mounts the lazy chart below. */}
       <button onClick={() => setShow(true)}>Load chart component</button>
+      {/* && rendering: nothing until show is true. HeavyChart's FIRST mount triggers the
+          chunk download; Suspense shows the fallback until the code arrives. */}
       {show && (
         <Suspense fallback={<p className="muted">Downloading chunk…</p>}>
           <HeavyChart />
@@ -68,24 +76,30 @@ function CodeSplittingDemo() {
 // Real apps use react-window / @tanstack/react-virtual — but interviewers
 // love asking HOW it works: render only the rows inside the viewport.
 function VirtualListDemo() {
-  const ROW_HEIGHT = 28;
-  const VIEWPORT = 280;
-  const TOTAL = 10000;
+  const ROW_HEIGHT = 28; // px per row — a fixed height keeps the math trivial
+  const VIEWPORT = 280;  // px height of the scroll box
+  const TOTAL = 10000;   // rows in the data array (NOT in the DOM)
 
+  // Current scroll offset in px; each update recomputes which slice of rows is visible.
   const [scrollTop, setScrollTop] = useState(0);
+  // useMemo + [] deps: build the 10,000 strings ONCE, not again on every scroll re-render.
+  // Array.from({ length: N }, fn) calls fn(_, i) per index; `_` = ignored first argument.
+  // `Transaction #${i + 1}` is a template literal — ${} interpolates values into the string.
   const rows = useMemo(
     () => Array.from({ length: TOTAL }, (_, i) => `Transaction #${i + 1} — ${(i * 7) % 500} pts`),
     []
   );
 
   // The whole trick: from scroll position, compute the visible slice…
-  const start = Math.floor(scrollTop / ROW_HEIGHT);
+  const start = Math.floor(scrollTop / ROW_HEIGHT); // index of the first row in view
   const visibleCount = Math.ceil(VIEWPORT / ROW_HEIGHT) + 2; // +overscan
-  const visible = rows.slice(start, start + visibleCount);
+  const visible = rows.slice(start, start + visibleCount); // ~12 rows — the only ones rendered
 
   return (
     <div className="card">
       <h3>2 · Virtualization — 10,000 rows, ~12 DOM nodes</h3>
+      {/* The scroll viewport. onScroll fires as you scroll; e.currentTarget is this div, and
+          its scrollTop (px scrolled) goes into state → re-render with a new visible slice. */}
       <div
         style={{ height: VIEWPORT, overflowY: 'auto', border: '1px solid var(--border)' }}
         onScroll={(e) => setScrollTop(e.currentTarget.scrollTop)}
@@ -93,6 +107,7 @@ function VirtualListDemo() {
         {/* Spacer div gives the scrollbar the full height… */}
         <div style={{ height: TOTAL * ROW_HEIGHT, position: 'relative' }}>
           {/* …and we absolutely position only the visible rows inside it. */}
+          {/* key = start + i, the ABSOLUTE row index — stable per data row, unlike plain i. */}
           {visible.map((text, i) => (
             <div
               key={start + i}

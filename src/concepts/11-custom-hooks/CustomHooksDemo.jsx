@@ -38,6 +38,7 @@
    folder for the theory. Confused by a word? → docs/GLOSSARY.md
    ═══════════════════════════════════════════════════════════════════════ */
 import { useState } from 'react';
+// The three custom hooks — named imports from sibling files in this same folder.
 import { useLocalStorage } from './useLocalStorage.js';
 import { useDebouncedValue } from './useDebouncedValue.js';
 import { useFetch } from './useFetch.js';
@@ -49,6 +50,7 @@ function LocalStorageDemo() {
   return (
     <div className="card">
       <h3>useLocalStorage — reload the page, the value survives</h3>
+      {/* Standard controlled input (concept 05) — but this setter also writes to localStorage. */}
       <input
         value={nickname}
         onChange={(e) => setNickname(e.target.value)}
@@ -61,7 +63,8 @@ function LocalStorageDemo() {
 
 // ─── ② useDebouncedValue demo — live vs debounced text ───
 function DebounceDemo() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(''); // the "live" value — updates on every keystroke
+  // The hook returns a lagging copy that only catches up 500ms after typing stops.
   const debouncedQuery = useDebouncedValue(query, 500);
   return (
     <div className="card">
@@ -77,10 +80,15 @@ function DebounceDemo() {
 
 // ─── ③ useFetch demo — loading / error / data from a fake API ───
 function FetchDemo() {
+  // Destructuring with RENAME: `data: posts` pulls the `data` field out under the local name
+  // `posts`. One hook call ≈ HttpClient + async pipe + manual loading/error flags in Angular.
   const { data: posts, error, loading } = useFetch('/data/posts.json');
   return (
     <div className="card">
       <h3>useFetch — loading/error/data + abort, packaged once</h3>
+      {/* Conditional rendering: && shows the right side only while the left is truthy — as the
+          fetch progresses, exactly one of these three branches is visible. In the list branch,
+          .slice(0, 3) copies the first three posts and .map renders each as an <li> (key=id). */}
       {loading && <p className="muted">Loading…</p>}
       {error && <p className="error">{error}</p>}
       {posts && (

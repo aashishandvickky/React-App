@@ -28,12 +28,14 @@
 // becomes jsx('h2', { id: 'x', children: 'hi' }). Because it's just
 // JavaScript expressions, you can assign it to variables, return it,
 // pass it around — that's what makes composition possible.
+// Also notice: NO `import React` line. Since React 17 the build tool injects the
+// jsx() import automatically (the "automatic runtime"). Interview: know why.
 export default function JsxBasics() {
   // ─── ① Plain JS data + a JSX snippet stored in a variable ───
   // Plain JS above the return — runs on EVERY render.
   const student = { name: 'Ashish', background: 'Angular', years: 8 };
   const skills = ['Java', 'Angular', 'Spring', 'React (learning)'];
-  const now = new Date().toLocaleTimeString();
+  const now = new Date().toLocaleTimeString(); // a plain string — new on every render
 
   // JSX stored in a variable — perfectly normal.
   const banner = <p className="success">JSX is just JavaScript expressions.</p>;
@@ -44,12 +46,15 @@ export default function JsxBasics() {
     // Angular analogy: <ng-container>.
     <>
       <h2>01 · JSX Basics</h2>
+      {/* { } drops a JS value into the UI — here the JSX saved above. Angular: {{ }}. */}
       {banner}
 
       {/* ─── ② A card: putting JS values into the UI with { } ─── */}
       <div className="card">
+        {/* To DISPLAY literal braces, put them in a string: {'{ }'} renders as { }. */}
         <h3>Interpolation: {'{ }'} instead of {'{{ }}'}</h3>
         {/* Anything inside { } is a JS EXPRESSION (no statements/if/for). */}
+        {/* {' '} is an explicit space — JSX trims whitespace at line breaks. */}
         <p>
           Hello <strong>{student.name}</strong>, coming from{' '}
           {student.background} with {student.years}+ years experience.
@@ -75,6 +80,8 @@ export default function JsxBasics() {
         <h3>Lists preview (details in concept 04)</h3>
         <ul>
           {/* No *ngFor — you .map() data to JSX. Each child needs a key. */}
+          {/* (skill) => (…) is an arrow function returning one <li> per array item.
+              Interview: key lets React match items between renders (concept 04). */}
           {skills.map((skill) => (
             <li key={skill}>{skill}</li>
           ))}
@@ -84,6 +91,7 @@ export default function JsxBasics() {
       {/* ─── ⑤ A card: the JavaScript that JSX turns into ─── */}
       <div className="card">
         <h3>What JSX compiles to</h3>
+        {/* Backticks = a template literal (a multi-line JS string), dropped in via { }. */}
         <pre>{`// You write:
 const el = <h2 className="title">Hi</h2>;
 

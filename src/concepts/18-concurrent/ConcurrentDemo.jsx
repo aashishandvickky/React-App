@@ -42,16 +42,21 @@
    updates (typing!) stay instant. React renders the slow part in the
    background and can abandon it if new input arrives.
    ═══════════════════════════════════════════════════════════════════════ */
+// The two concurrent hooks (useDeferredValue, useTransition) plus useMemo (cache the
+// heavy row-building) and useState (input text) — all named exports of 'react'.
 import { useDeferredValue, useMemo, useState, useTransition } from 'react';
 
 // ─── ① SlowList — deliberately heavy list (~250ms per render) ───
 // Each row burns a little CPU while rendering.
-function SlowList({ query }) {
+function SlowList({ query }) { // destructured prop: the search text the rows echo back
+  // useMemo: only rebuild the 250 rows when `query` changes (deps array at the end).
   const items = useMemo(() => {
     const out = [];
     for (let i = 0; i < 250; i++) {
-      const t0 = performance.now();
+      const t0 = performance.now(); // high-precision timestamp (ms)
+      // Busy-wait: spin until 1ms has passed — fakes expensive per-row render work.
       while (performance.now() - t0 < 1) { /* ~1ms per row = ~250ms total */ }
+      // Template literal (backticks + ${…}); `query || '∅'` falls back to ∅ when empty.
       out.push(`${query || '∅'} — result ${i + 1}`);
     }
     return out;
@@ -59,6 +64,7 @@ function SlowList({ query }) {
 
   return (
     <ul style={{ maxHeight: 150, overflowY: 'auto' }}>
+      {/* One <li> per row; each string is unique, so it doubles as the key. */}
       {items.map((it) => <li key={it}>{it}</li>)}
     </ul>
   );
@@ -67,10 +73,12 @@ function SlowList({ query }) {
 // ─── ② JankyDemo — the blocking version (feel the lag) ───
 /** WITHOUT concurrency: one state drives input + heavy list → typing janks. */
 function JankyDemo() {
-  const [text, setText] = useState('');
+  const [text, setText] = useState(''); // ONE state feeds both input and list — the problem
   return (
     <div className="card">
       <h3>❌ Blocking — type fast, feel the lag</h3>
+      {/* Controlled input (concept 05): every keystroke re-renders the 250 slow rows FIRST,
+          so the typed letter can't appear until the ~250ms render finishes. */}
       <input value={text} onChange={(e) => setText(e.target.value)} placeholder="every keystroke renders 250 slow rows" />
       <SlowList query={text} />
     </div>
@@ -82,6 +90,8 @@ function JankyDemo() {
 function TransitionDemo() {
   const [text, setText] = useState('');       // urgent: the input echo
   const [query, setQuery] = useState('');     // non-urgent: drives the slow list
+  // useTransition returns a pair: isPending (true while the background render is running)
+  // and startTransition (wrap the LOW-priority setState calls inside it).
   const [isPending, startTransition] = useTransition();
 
   return (
@@ -93,11 +103,14 @@ function TransitionDemo() {
           setText(e.target.value); // urgent — applied immediately
           startTransition(() => {
             // non-urgent — rendered in background, interruptible by new input
+            // Interview: transitions are interruptible — a new keystroke ABANDONS the
+            // half-done list render, so slow work never blocks typing.
             setQuery(e.target.value);
           });
         }}
         placeholder="type fast — no jank"
       />
+      {/* isPending: show feedback while the deprioritized list renders behind the scenes. */}
       {isPending && <span className="badge">rendering…</span>}
       <SlowList query={query} />
     </div>
@@ -111,13 +124,14 @@ function DeferredDemo() {
   // deferredText "lags behind" text while React is busy; the list renders
   // with the old value first, then catches up in a background render.
   const deferredText = useDeferredValue(text);
-  const stale = text !== deferredText;
+  const stale = text !== deferredText; // true while the list still shows the OLD value
 
   return (
     <div className="card">
       <h3>✅ useDeferredValue — defer a received value</h3>
       <input value={text} onChange={(e) => setText(e.target.value)} placeholder="type fast" />
       {stale && <span className="badge">list is catching up…</span>}
+      {/* Ternary (cond ? a : b): dim the list while it's showing stale results. */}
       <div style={{ opacity: stale ? 0.5 : 1 }}>
         <SlowList query={deferredText} />
       </div>

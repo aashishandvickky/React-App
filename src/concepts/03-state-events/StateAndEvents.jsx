@@ -27,6 +27,7 @@
    below (①, ②, …) matches one card on screen. Read NOTES.md in this folder
    for the theory. Confused by a word? → docs/GLOSSARY.md
    ═══════════════════════════════════════════════════════════════════════ */
+// Named import of the useState hook — the only React API this file needs.
 import { useState } from 'react';
 
 // ─── ① Counter — batched updates & per-render snapshots ───
@@ -36,6 +37,7 @@ export function Counter() {
   // Calling the setter SCHEDULES a re-render; it does NOT mutate `count`.
   const [count, setCount] = useState(0);
 
+  // An arrow function stored in a const — the handler for the "broken +3" button.
   const brokenAddThree = () => {
     // ❌ CLASSIC INTERVIEW TRAP: all three read the SAME `count` from this
     // render's closure. If count is 0, this is setCount(1) three times → 1.
@@ -52,11 +54,16 @@ export function Counter() {
   };
 
   return (
+    // className = CSS class (JSX name for the reserved word `class`).
     <div className="card">
       <h3>Counter — updates are batched & closures are per-render</h3>
+      {/* {count} interpolates the state; data-testid is a plain DOM attribute the
+          test file uses to find this node. */}
       <p>
         Count: <strong data-testid="count">{count}</strong>
       </p>
+      {/* onClick takes a FUNCTION. () => setCount(count + 1) is an inline arrow that
+          runs on click; onClick={setCount(count + 1)} would fire during render. */}
       <button onClick={() => setCount(count + 1)}>+1</button>
       <button onClick={brokenAddThree} className="secondary">
         +3 (broken — adds 1)
@@ -77,15 +84,19 @@ function ObjectStateDemo() {
 
   const earnPoints = () =>
     // Spread the old object, override one field — like a tiny immutable update.
+    // Syntax note: ({ … }) — the parens make the arrow RETURN the object; a bare { }
+    // after => would be read as a function body, not an object literal.
     setProfile((p) => ({ ...p, points: p.points + 50 }));
 
   const addTag = () =>
     // Arrays too: concat/spread/filter/map — never push/splice on state.
+    // `react-${…}` is a template literal: backticks + ${ } embed a value in a string.
     setProfile((p) => ({ ...p, tags: [...p.tags, `react-${p.tags.length}`] }));
 
   return (
     <div className="card">
       <h3>Object/array state — immutability</h3>
+      {/* JSON.stringify(…, null, 2) pretty-prints the state so each click is visible. */}
       <pre>{JSON.stringify(profile, null, 2)}</pre>
       <button onClick={earnPoints}>Earn 50 pts</button>
       <button onClick={addTag}>Add tag</button>
@@ -99,7 +110,8 @@ function ObjectStateDemo() {
 
 // ─── ③ EventsDemo — camelCase event props & SyntheticEvent ───
 function EventsDemo() {
-  const [log, setLog] = useState([]);
+  const [log, setLog] = useState([]); // state starts as an empty array of messages
+  // Helper: functional update appends msg; slice(-4) keeps only the last 4 old entries.
   const push = (msg) => setLog((l) => [...l.slice(-4), msg]);
 
   return (
@@ -107,6 +119,10 @@ function EventsDemo() {
       <h3>Events — camelCase props, SyntheticEvent</h3>
       {/* (click)="fn($event)" → onClick={fn}. You pass the FUNCTION, you
           don't call it: onClick={fn()} would run during render. */}
+      {/* onChange fires on EVERY keystroke (unlike the native change event);
+          e.target.value is the input's current text.
+          onKeyDown uses &&: if the left side is true, run the right side —
+          a short-circuit one-liner instead of an if statement. */}
       <input
         placeholder="type here"
         onChange={(e) => push(`change: "${e.target.value}"`)}
@@ -121,6 +137,8 @@ function EventsDemo() {
       >
         Click me
       </button>
+      {/* join('\n') builds one string; || shows the fallback while it's empty
+          (an empty string is falsy in JS). */}
       <pre>{log.join('\n') || '(interact above)'}</pre>
     </div>
   );
@@ -129,8 +147,11 @@ function EventsDemo() {
 // ─── ④ The page component — stacks the three cards ───
 export default function StateAndEvents() {
   return (
+    // <>…</> Fragment: one root node without adding an extra <div> to the DOM.
     <>
       <h2>03 · State & Events</h2>
+      {/* Capitalized tag = our own component (self-closing — no children). Each one
+          keeps its OWN state: three independent useState worlds on one page. */}
       <Counter />
       <ObjectStateDemo />
       <EventsDemo />

@@ -26,7 +26,9 @@
    below (①, ②, …) matches one function or card. Read NOTES.md in this
    folder for the theory. Confused by a word? → docs/GLOSSARY.md
    ═══════════════════════════════════════════════════════════════════════ */
+// Named import ({ } destructures the module's exports) of the useState hook.
 import { useState } from 'react';
+// Vite imports JSON directly — `members` is a plain JS array, baked in at build time.
 import members from '../../data/members.json';
 
 // ─── ① MemberBadge — a child receiving plain props (like @Input) ───
@@ -34,7 +36,10 @@ import members from '../../data/members.json';
 // Default values use JS default-parameter syntax.
 function MemberBadge({ name, tier = 'Base', points }) {
   return (
+    // className = CSS class (JSX name for the reserved word `class`). style={{ … }}:
+    // outer { } = JSX expression, inner { } = a JS object; bare numbers mean pixels.
     <span className="badge" style={{ marginRight: 8 }}>
+      {/* { } interpolates each prop; toLocaleString() adds thousands separators. */}
       {name} · {tier} · {points.toLocaleString()} pts
     </span>
   );
@@ -46,6 +51,12 @@ function MemberBadge({ name, tier = 'Base', points }) {
 function TierPicker({ tiers, selected, onSelect }) {
   return (
     <div>
+      {/* .map turns each tier string into a <button>; (t) => (…) is an arrow function.
+          Each button's props:
+          key       — required inside .map so React can track items (concept 04)
+          className — a ternary: cond ? ifTrue : ifFalse. Selected gets the default look.
+          onClick   — pass a FUNCTION. () => onSelect(t) runs on click;
+                      onClick={onSelect(t)} would call it during render. Interview classic. */}
       {tiers.map((t) => (
         <button
           key={t}
@@ -66,6 +77,7 @@ function Panel({ title, children }) {
   return (
     <div className="card">
       <h3>{title}</h3>
+      {/* Whatever the parent nested inside <Panel>…</Panel> renders right here. */}
       {children}
     </div>
   );
@@ -73,28 +85,39 @@ function Panel({ title, children }) {
 
 // ─── ④ The parent — owns the state, derives the visible members ───
 export default function ComponentsProps() {
+  // useState('Gold') returns a PAIR [currentValue, setterFn], grabbed with array
+  // destructuring; 'Gold' is the initial value. Calling setSelectedTier(...) schedules
+  // a re-render. Interview: the setter is async/batched — `selectedTier` keeps its
+  // old value until the next render runs this function again.
   const [selectedTier, setSelectedTier] = useState('Gold');
 
   // Derived data — computed during render, NOT stored in state.
   // (Storing derivable data in state is a common interview red flag.)
-  const visible = members.filter((m) => m.tier === selectedTier);
+  const visible = members.filter((m) => m.tier === selectedTier); // keep only that tier
 
   return (
     <>
       <h2>02 · Components & Props</h2>
 
       {/* ─── ⑤ A card: data down, events up ─── */}
+      {/* Using our own component as a tag. title="…" is a string prop (like @Input). */}
       <Panel title="Data down, events up">
         <p className="muted">
           Parent owns the state; TierPicker "emits" via the onSelect callback
           prop; MemberBadge just receives data. One-way flow — no [(ngModel)]
           between components.
         </p>
+        {/* Props going down (like @Input bindings):
+            tiers    — an inline array literal (non-string prop values need { })
+            selected — the current state value (data down)
+            onSelect — the setter passed as a callback; the child calls it (events up) */}
         <TierPicker
           tiers={['Base', 'Silver', 'Gold', 'Platinum']}
           selected={selectedTier}
           onSelect={setSelectedTier} // passing the state setter directly is fine
         />
+        {/* Conditional rendering: a ternary inside { } replaces *ngIf/else.
+            Each badge gets a stable key plus three data props. */}
         <p>
           {visible.length === 0
             ? 'No members in this tier.'

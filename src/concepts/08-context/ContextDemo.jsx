@@ -35,25 +35,33 @@
    below (①, ②, …) matches one section on screen. Read NOTES.md in this
    folder for the theory. Confused by a word? → docs/GLOSSARY.md
    ═══════════════════════════════════════════════════════════════════════ */
+// Named imports — the four React APIs this file uses (see INGREDIENTS above for each one's job).
 import { createContext, useContext, useMemo, useState } from 'react';
 
 // ─── ① ThemeContext — create the context ───
 // 1) CREATE — usually in its own module so any component can import it.
 //    The default value is used only when there's NO provider above (rare/tests).
-const ThemeContext = createContext(null);
+const ThemeContext = createContext(null); // null = "no provider above" — the guard in ③ checks it
 
 // ─── ② ThemeProvider — own the state, broadcast it downward ───
 // 2) PROVIDE — a wrapper component owning the state + exposing an API.
 //    This "provider component" pattern is the idiomatic mini state manager.
+// { children } destructures the children prop — whatever JSX gets nested inside <ThemeProvider>.
+// Angular analogy: <ng-content>. The provider adds no UI of its own, it just wraps.
 function ThemeProvider({ children }) {
+  // Array destructuring: useState returns [currentValue, setterFn]. Theme starts as 'dark'.
   const [theme, setTheme] = useState('dark');
+  // Arrow fn; setTheme gets an UPDATER — `t` is the current theme, the ternary returns the next.
   const toggle = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
 
   // ⚠️ PERF: value={{ theme, toggle }} inline creates a NEW object every
   // render → every consumer re-renders every time. useMemo keeps the
   // reference stable until `theme` actually changes.
+  // Interview: consumers compare `value` by REFERENCE — a new object means "changed".
+  // Syntax note: () => ({ … }) — the extra parens make the arrow RETURN an object literal.
   const value = useMemo(() => ({ theme, toggle }), [theme]);
 
+  // .Provider is built into every context object; whatever `value` holds is what consumers read.
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
@@ -61,7 +69,10 @@ function ThemeProvider({ children }) {
 // 3) CONSUME — via a custom hook that also guards against a missing provider.
 //    Every serious codebase wraps useContext like this.
 function useTheme() {
+  // useContext reads the value of the NEAREST matching provider above this component.
   const ctx = useContext(ThemeContext);
+  // No provider → ctx is the default (null) → fail fast with a clear message, instead of a
+  // confusing "cannot read property of null" somewhere downstream.
   if (!ctx) throw new Error('useTheme must be used inside <ThemeProvider>');
   return ctx;
 }
@@ -81,10 +92,13 @@ function Section() {
 }
 function ThemedButton() {
   const { theme, toggle } = useTheme(); // reads the NEAREST provider above
+  // Ternary picks an inline-style OBJECT per theme (React inline styles are JS objects).
   const styles =
     theme === 'dark'
       ? { background: '#0b1220', color: '#e2e8f0' }
       : { background: '#f8fafc', color: '#0f172a' };
+  // The button's style spreads (...styles) the theme colors, then adds a border on top.
+  // onClick={toggle} calls a function living up in ThemeProvider — no props were drilled.
   return (
     <button style={{ ...styles, border: '1px solid var(--border)' }} onClick={toggle}>
       Current theme: {theme} — click to toggle
@@ -94,6 +108,9 @@ function ThemedButton() {
 
 // ─── ⑤ NestedProvidersDemo — nested providers override outer ones ───
 function NestedProvidersDemo() {
+  // A <ThemeContext.Provider> can appear anywhere in JSX. Consumers under THIS one read its
+  // value ('light'), shadowing the outer ThemeProvider — like a child injector in Angular DI.
+  // toggle is a no-op arrow fn (() => {}), so the inner button can't actually switch themes.
   return (
     <ThemeContext.Provider value={{ theme: 'light', toggle: () => {} }}>
       <p className="muted">

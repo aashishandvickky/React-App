@@ -42,10 +42,13 @@
    below (①, ②, …) matches one section on screen. Read NOTES.md in this
    folder for the theory. Confused by a word? → docs/GLOSSARY.md
    ═══════════════════════════════════════════════════════════════════════ */
+// Named imports from react-router-dom: routing components (Routes/Route/Link/NavLink/Outlet)
+// and hooks (useParams/useNavigate/useSearchParams) — each explained where first used below.
 import {
   Routes, Route, Link, NavLink, Outlet,
   useParams, useNavigate, useSearchParams,
 } from 'react-router-dom';
+// Build-time JSON import — the stub member list; no server involved.
 import members from '../../data/members.json';
 
 // ─── ① Layout route: shared chrome + <Outlet> for children ───
@@ -65,14 +68,21 @@ function MembersLayout() {
 // ─── ② Index route: list + query params (useSearchParams) ───
 function MemberList() {
   // useSearchParams ≈ ActivatedRoute.queryParams, but read/write.
+  // Array destructuring, useState-style: [current params, setter that navigates].
   const [searchParams, setSearchParams] = useSearchParams();
+  // searchParams is a URLSearchParams. ?? (nullish coalescing) falls back to 'all' only
+  // when .get() returns null (param absent) — unlike ||, it would keep '' or 0.
   const tierFilter = searchParams.get('tier') ?? 'all';
 
+  // Derived on every render (not state): keep members matching the tier, or everyone.
   const visible = members.filter((m) => tierFilter === 'all' || m.tier === tierFilter);
 
   return (
     <>
       <label>Filter by tier (stored in the URL — try reloading):</label>
+      {/* Controlled select: its value comes FROM the URL; onChange WRITES the URL via
+          setSearchParams — {} clears ?tier, { tier: value } sets it. That's a real
+          navigation (history entry), no page reload. Ternary: cond ? ifTrue : ifFalse. */}
       <select
         value={tierFilter}
         onChange={(e) => setSearchParams(e.target.value === 'all' ? {} : { tier: e.target.value })}
@@ -95,10 +105,14 @@ function MemberList() {
 
 // ─── ③ Detail route: path params (useParams) + useNavigate ───
 function MemberDetail() {
+  // Object destructuring: useParams() returns { memberId: 'M-1001' } — the property name
+  // matches the :memberId segment in the route path (④b below).
   const { memberId } = useParams(); // ≈ ActivatedRoute.snapshot.params
   const navigate = useNavigate();   // ≈ Router.navigate
+  // .find returns the first match, or undefined if the URL param is bogus.
   const member = members.find((m) => m.id === memberId);
 
+  // Early return = a mini route guard: a bad param renders an error instead of crashing.
   if (!member) return <p className="error">No member {memberId} (bad URL param).</p>;
 
   return (
@@ -125,12 +139,17 @@ export default function RouterDemo() {
 
       {/* ─── ④a Local tab nav. NavLink gets an "active" class automatically. ─── */}
       <nav style={{ marginBottom: 8 }}>
+        {/* to="." = this route's own path. `end` = active ONLY on the exact URL, so Intro
+            isn't highlighted while you're on /members/… (≈ routerLinkActiveOptions exact). */}
         <NavLink to="." end className="badge" style={{ marginRight: 8 }}>Intro</NavLink>
+        {/* Relative link → /13-router/members, matching the nested branch below. */}
         <NavLink to="members" className="badge">Members (nested routes)</NavLink>
       </nav>
 
       {/* ─── ④b NESTED route table — these paths hang under /13-router/ ─── */}
       <Routes>
+        {/* `index` = the default route at this level (Angular: path: ''), shown when the
+            URL is exactly /13-router. Its element is the cheat-sheet card. */}
         <Route
           index
           element={
@@ -153,8 +172,12 @@ Angular → React Router:
             </div>
           }
         />
+        {/* Nesting <Route> inside <Route> = child routes: the parent renders MembersLayout
+            and whichever child matches renders into its <Outlet>. */}
         <Route path="members" element={<MembersLayout />}>
+          {/* /13-router/members → the list (default child). */}
           <Route index element={<MemberList />} />
+          {/* /13-router/members/M-1001 → :memberId becomes useParams().memberId. */}
           <Route path=":memberId" element={<MemberDetail />} />
         </Route>
       </Routes>

@@ -23,14 +23,23 @@
    trick of this repo. Every page works this way: browser on one side, its
    file on the other. Confused by a word? → docs/GLOSSARY.md
    ═══════════════════════════════════════════════════════════════════════ */
+// Named import ({ } picks one export out of the module — JS destructuring syntax).
+// Link is React Router's <a>: it swaps the page WITHOUT a full browser reload.
+// Angular analogy: routerLink.
 import { Link } from 'react-router-dom';
 
+// A React component is just a function that returns JSX. `export default` makes it
+// this file's main export; the router renders <Welcome /> when you visit this route.
 export default function Welcome() {
   return (
+    // <>…</> is a Fragment: a component must return ONE root node, and a Fragment
+    // groups children without adding an extra <div> to the DOM. Angular: <ng-container>.
     <>
       <h2>00 · 👋 Start Here</h2>
 
       {/* ─── ① What this app is ─── */}
+      {/* className is JSX for the HTML class attribute (`class` is a reserved word in
+          JS). Angular: class="card" / [class]. Same pattern on every card below. */}
       <div className="card">
         <h3>What this is</h3>
         <p>
@@ -55,6 +64,8 @@ export default function Welcome() {
           <li><strong>Read NOTES.md</strong> in the same folder for the theory.</li>
           <li><strong>Break it</strong> — change something, watch the browser react.
             (When it goes wrong: <code>docs/DEBUGGING.md</code>.)</li>
+          {/* {' '} inserts an explicit space — JSX drops whitespace around line
+              breaks, so without it the text and the <code> tag would touch. */}
           <li><strong>Do the mini-exercises</strong> for that concept from{' '}
             <code>docs/EXERCISES.md</code>, then undo experiments with{' '}
             <code>git checkout -- src/</code>.</li>
@@ -74,6 +85,8 @@ export default function Welcome() {
             in the whole repo.</li>
         </ul>
         <p>
+          {/* to= is the route path (like routerLink). Clicking updates the URL and
+              swaps the page component — no server round-trip. */}
           <Link to="/01-jsx-basics">Start with 01 · JSX Basics →</Link>
         </p>
       </div>

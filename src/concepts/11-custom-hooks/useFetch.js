@@ -15,25 +15,30 @@ import { useEffect, useState } from 'react';
  * refetch-on-url-change, aborting stale requests.
  */
 export function useFetch(url) {
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState(null); // the parsed JSON once it arrives
+  const [error, setError] = useState(null); // an error message string, or null
+  const [loading, setLoading] = useState(true); // true until a response or an error lands
 
   useEffect(() => {
+    // AbortController = a cancel handle: pass its .signal to fetch, call .abort() to cancel.
     const controller = new AbortController();
     // Reset for the NEW url (this effect re-runs whenever url changes).
     setLoading(true);
     setError(null);
 
+    // fetch returns a Promise; each .then runs when the previous async step finishes.
     fetch(url, { signal: controller.signal })
       .then((res) => {
+        // Gotcha: fetch does NOT reject on HTTP errors (404/500) — check res.ok ourselves.
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
+        return res.json(); // parsing the body is async too — it feeds the next .then
       })
       .then((json) => {
+        // Success: store the data and stop the spinner (React batches these two updates).
         setData(json);
         setLoading(false);
       })
+      // .catch handles BOTH network failures and the throw above.
       .catch((err) => {
         // Aborts are expected (unmount / url changed mid-flight) — not errors.
         if (err.name !== 'AbortError') {
@@ -44,8 +49,10 @@ export function useFetch(url) {
 
     // Abort the in-flight request when url changes or component unmounts.
     // This is what prevents the classic "old response overwrites new" race.
+    // Interview: "how do you cancel a fetch on unmount?" — exactly this cleanup.
     return () => controller.abort();
-  }, [url]);
+  }, [url]); // dep: re-run the whole dance whenever the url argument changes
 
+  // Object property SHORTHAND: { data } means { data: data }. Callers destructure this.
   return { data, error, loading };
 }

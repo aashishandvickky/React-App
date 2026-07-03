@@ -44,7 +44,9 @@
    below (①, ②, …) matches one section on screen. Read NOTES.md in this
    folder for the theory. Confused by a word? → docs/GLOSSARY.md
    ═══════════════════════════════════════════════════════════════════════ */
+// react-redux = the React bindings: useSelector reads store state, useDispatch sends actions.
 import { useDispatch, useSelector } from 'react-redux';
+// Action creators + selectors come from the slice files — components never hard-code state shape.
 import { earned, redeemed, reset, selectPoints, selectHistory } from './walletSlice.js';
 import { fetchCatalog, selectCatalog } from './catalogSlice.js';
 
@@ -54,7 +56,7 @@ function WalletPanel() {
   // when the selected value changes (reference/strict equality) — this
   // fine-grained subscription is Redux's perf edge over raw context.
   const points = useSelector(selectPoints);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); // the store's dispatch function ≈ NgRx Store.dispatch
 
   return (
     <div className="card">
@@ -62,6 +64,7 @@ function WalletPanel() {
       <p>
         Balance: <strong>{points.toLocaleString()} pts</strong>
       </p>
+      {/* earned(500) only BUILDS the action object; dispatch() actually sends it to the store. */}
       <button onClick={() => dispatch(earned(500))}>Earn 500</button>
       <button onClick={() => dispatch(redeemed(800))}>Redeem 800</button>
       <button className="secondary" onClick={() => dispatch(reset())}>Reset</button>
@@ -78,11 +81,15 @@ function WalletPanel() {
 // re-render when only history changes elsewhere (and vice versa).
 function HistoryPanel() {
   const history = useSelector(selectHistory);
-  if (history.length === 0) return null;
+  if (history.length === 0) return null; // returning null = render nothing at all
   return (
     <div className="card">
       <h3>History (separate subscription)</h3>
       <ul>
+        {/* key={i} (index) is OK here: rows are stateless text, and the list only ever
+            appends or fully clears (Reset unmounts ALL rows together, so none can inherit
+            a wrong neighbor's state). Reordering/removing SOME rows, or rows with their
+            own state, would make index keys a bug (see concept 04). */}
         {history.map((h, i) => (
           <li key={i} className={h.type === 'earn' ? 'success' : 'error'}>
             {h.type} {h.amount} pts
@@ -95,15 +102,20 @@ function HistoryPanel() {
 
 // ─── ③ Catalog panel — async thunk lifecycle ───
 function CatalogPanel() {
+  // Object destructuring of the whole catalog slice. Because selectCatalog returns the slice
+  // object, this component re-renders whenever ANY catalog field changes.
   const { items, status, error } = useSelector(selectCatalog);
   const dispatch = useDispatch();
 
   return (
     <div className="card">
       <h3>Async thunk — pending / fulfilled / rejected</h3>
+      {/* ONE dispatch kicks off the whole pending→fulfilled/rejected lifecycle. disabled
+          while loading blocks double-fetches; the label is a ternary on status. */}
       <button onClick={() => dispatch(fetchCatalog())} disabled={status === 'loading'}>
         {status === 'loading' ? 'Loading…' : 'Fetch catalog'}
       </button>
+      {/* Render by status — && shows a branch only while its condition is true. */}
       {status === 'failed' && <p className="error">{error}</p>}
       {status === 'succeeded' && (
         <ul>

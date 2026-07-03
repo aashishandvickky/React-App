@@ -10,10 +10,11 @@ everything — use the table below to grab the right doc at the right moment.
 |---|---|---|
 | 1 | [START_HERE.md](START_HERE.md) | you've got the app running and wonder "now what?" — the study plan |
 | 2 | [HOW_THE_APP_WORKS.md](HOW_THE_APP_WORKS.md) | you want to understand how the project's files connect (week 3-ish, or when curious) |
-| 3 | [GLOSSARY.md](GLOSSARY.md) | any word confuses you — keep it open in a tab, always |
-| 4 | [EXERCISES.md](EXERCISES.md) | you finish studying a concept — 2–3 small tasks per concept |
-| 5 | [DEBUGGING.md](DEBUGGING.md) | something broke, or you want to install React DevTools (do it week 1) |
-| 6 | [BUILD_A_FEATURE.md](BUILD_A_FEATURE.md) | you finish the concepts — build a full page yourself, like a real work ticket |
+| 3 | [SETUP_FROM_SCRATCH.md](SETUP_FROM_SCRATCH.md) | you wonder how this project was *built* — every command, package, and config file, line by line |
+| 4 | [GLOSSARY.md](GLOSSARY.md) | any word confuses you — keep it open in a tab, always |
+| 5 | [EXERCISES.md](EXERCISES.md) | you finish studying a concept — 2–3 small tasks per concept |
+| 6 | [DEBUGGING.md](DEBUGGING.md) | something broke, or you want to install React DevTools (do it week 1) |
+| 7 | [BUILD_A_FEATURE.md](BUILD_A_FEATURE.md) | you finish the concepts — build a full page yourself, like a real work ticket |
 
 ## Layer 2 — Reference & interview prep (denser, for later)
 

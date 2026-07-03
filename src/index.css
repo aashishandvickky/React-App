@@ -1,4 +1,8 @@
 /* Minimal global styles so demos are readable. Not the point of this repo. */
+
+/* CSS custom properties ("CSS variables") declared on :root, the <html> element.
+   Every rule below reuses them via var(--name) — one place to retheme the whole app.
+   Also sets the app-wide font stack (system-ui = the OS's native UI font). */
 :root {
   --bg: #0f172a;
   --panel: #1e293b;
@@ -10,41 +14,60 @@
   --bad: #f87171;
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
+/* Standard reset: border-box makes padding/border count INSIDE an element's width. */
 * { box-sizing: border-box; }
+/* Page defaults: remove the browser's body margin, apply the dark theme colors. */
 body { margin: 0; background: var(--bg); color: var(--text); }
+/* Links: accent blue, underline only on hover. */
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
+/* Code snippets get a monospace font; <pre> blocks add a dark panel and
+   scroll sideways (overflow-x) instead of wrapping long lines. */
 code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
 pre { background: #0b1220; border: 1px solid var(--border); padding: 12px; border-radius: 8px; overflow-x: auto; }
 
+/* App shell (App.jsx): flexbox row = sidebar and content side by side, full viewport height. */
 .layout { display: flex; min-height: 100vh; }
+/* Sidebar: fixed 280px (flex-shrink:0 stops it being squeezed), sticky so it stays
+   pinned while the content scrolls, with its own scrollbar when links overflow. */
 .sidebar {
   width: 280px; flex-shrink: 0; padding: 16px;
   border-right: 1px solid var(--border); background: var(--panel);
   position: sticky; top: 0; height: 100vh; overflow-y: auto;
 }
+/* Sidebar title + nav: links stack vertically (flex column) with a small gap. */
 .sidebar h1 { font-size: 1rem; color: var(--accent); }
 .sidebar nav { display: flex; flex-direction: column; gap: 2px; }
 .sidebar nav a { padding: 6px 10px; border-radius: 6px; color: var(--muted); font-size: 0.85rem; }
+/* .active is added by NavLink (App.jsx) to the link matching the current URL. */
 .sidebar nav a.active { background: #0b1220; color: var(--accent); font-weight: 600; }
+/* Main content area: flex:1 = take all remaining width; max-width keeps lines readable. */
 .content { flex: 1; padding: 24px 32px; max-width: 900px; }
 
+/* .card: the boxed panel wrapper nearly every concept demo uses. */
 .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin: 12px 0; }
 .card h3 { margin-top: 0; }
+/* Buttons: accent-filled by default; .secondary is the quiet grey variant;
+   :disabled fades the button and shows a "not-allowed" cursor. */
 button {
   background: var(--accent); color: #082f49; border: none; border-radius: 6px;
   padding: 6px 14px; font-weight: 600; cursor: pointer; margin: 2px;
 }
 button.secondary { background: var(--border); color: var(--text); }
 button:disabled { opacity: 0.4; cursor: not-allowed; }
+/* Form controls (used heavily in 05-forms): shared dark input look;
+   labels render as their own line above each control. */
 input, select, textarea {
   background: #0b1220; color: var(--text); border: 1px solid var(--border);
   border-radius: 6px; padding: 6px 10px; margin: 2px;
 }
 label { display: block; margin: 8px 0 2px; color: var(--muted); font-size: 0.85rem; }
+/* Status text helpers used throughout the demos (error red, success green, muted grey). */
 .error { color: var(--bad); }
 .success { color: var(--good); }
 .muted { color: var(--muted); font-size: 0.85rem; }
+/* Tables: border-collapse merges neighbouring cell borders into single lines. */
 table { border-collapse: collapse; width: 100%; }
 th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; font-size: 0.9rem; }
+/* .badge: small pill-shaped label (border-radius: 99px fully rounds the ends). */
 .badge { background: #0b1220; border: 1px solid var(--border); border-radius: 99px; padding: 2px 10px; font-size: 0.75rem; }

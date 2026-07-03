@@ -39,6 +39,9 @@
    Two interview topics in one, because error boundaries are the ONE thing
    that still REQUIRES a class component (no hook equivalent yet).
    ═══════════════════════════════════════════════════════════════════════ */
+// Named imports in braces (like `import { Component } from '@angular/core'`):
+// Component = the base class a CLASS component must extend; useState = the state hook
+// for the two small function components further down.
 import { Component, useState } from 'react';
 
 // ─── ① ErrorBoundary — the class component that catches render crashes ───
@@ -47,28 +50,38 @@ import { Component, useState } from 'react';
  * state in this.state, updates via this.setState (merges, unlike useState),
  * lifecycle methods instead of effects, render() returns JSX.
  */
+// `extends Component` plugs the class into React's lifecycle machinery — required here
+// because getDerivedStateFromError/componentDidCatch only exist on classes.
 class ErrorBoundary extends Component {
+  // Runs once when React creates the instance. `props` = the attributes passed in JSX
+  // (all your @Input()s bundled into one object).
   constructor(props) {
-    super(props);
-    this.state = { error: null };
+    super(props); // must call the parent constructor before `this` can be used
+    this.state = { error: null }; // class state is ONE plain object on the instance
   }
 
   // Called during render when a DESCENDANT throws → return new state
   // to show the fallback UI. Must be pure (no side effects here).
+  // `static` = defined on the class itself, not the instance — so no `this` in here.
   static getDerivedStateFromError(error) {
-    return { error };
+    return { error }; // shorthand for { error: error }; React merges it into this.state
   }
 
   // Called after the error is committed → side effects OK.
   // This is where you'd send the error to Sentry/Datadog.
   componentDidCatch(error, info) {
+    // info.componentStack lists the component chain that was rendering when it threw.
     console.error('[ErrorBoundary] caught:', error.message, info.componentStack);
   }
 
+  // Class field + arrow function: assigning an arrow keeps `this` bound to the instance,
+  // so no `.bind(this)` in the constructor (a classic class-component gotcha).
+  // Note: this.setState MERGES the object into state; useState setters REPLACE the value.
   handleRetry = () => this.setState({ error: null });
 
+  // render() is the class equivalent of a function component's body: read state, return JSX.
   render() {
-    if (this.state.error) {
+    if (this.state.error) { // an error was captured → show fallback UI instead of children
       return (
         <div className="card" style={{ borderColor: 'var(--bad)' }}>
           <h3 className="error">⚠ Something went wrong in this section</h3>
@@ -79,6 +92,7 @@ class ErrorBoundary extends Component {
       );
     }
     // No error → render children normally (transparent wrapper).
+    // this.props.children = whatever JSX was nested between the boundary's tags (≈ ng-content).
     return this.props.children;
   }
 }
@@ -86,15 +100,17 @@ class ErrorBoundary extends Component {
 // ─── ② BuggyPointsWidget — throws during render (boundaries catch this) ───
 /** A component that can throw DURING RENDER (what boundaries catch). */
 function BuggyPointsWidget() {
-  const [points, setPoints] = useState(100);
+  const [points, setPoints] = useState(100); // array destructuring: [value, setter], starts at 100
   if (points > 300) {
     // Thrown during render → caught by the nearest boundary above.
+    // Template literal: backticks + ${…} embed a value in the string (same as in TypeScript).
     throw new Error(`Points exploded at ${points}! (thrown during render)`);
   }
   return (
     <div className="card">
       <h3>BuggyPointsWidget — crashes above 300</h3>
       <p>Points: {points}</p>
+      {/* Updater form: setPoints(p => p + 150) computes the next value from the previous. */}
       <button onClick={() => setPoints((p) => p + 150)}>Earn 150 (3rd click throws)</button>
     </div>
   );
@@ -102,7 +118,7 @@ function BuggyPointsWidget() {
 
 // ─── ③ HandlerErrorWidget — onClick errors need try/catch, not boundaries ───
 function HandlerErrorWidget() {
-  const [caught, setCaught] = useState(null);
+  const [caught, setCaught] = useState(null); // the caught error message (null = nothing yet)
   return (
     <div className="card">
       <h3>Event-handler errors are NOT caught by boundaries</h3>
@@ -111,6 +127,7 @@ function HandlerErrorWidget() {
           try {
             // Errors in handlers happen outside rendering — boundaries never
             // see them. Plain try/catch is the right tool here.
+            // Interview: same for async errors (setTimeout, promises) — invisible to boundaries.
             throw new Error('boom from onClick');
           } catch (e) {
             setCaught(e.message);
@@ -119,6 +136,7 @@ function HandlerErrorWidget() {
       >
         Throw in onClick (handled locally)
       </button>
+      {/* && rendering: null is falsy → nothing; once set, the message shows (≈ *ngIf). */}
       {caught && <p className="success">try/catch caught: “{caught}”</p>}
     </div>
   );

@@ -158,6 +158,8 @@ Start with the beginner-friendly four:
 - **START_HERE.md** — the guided learning path (read this first)
 - **HOW_THE_APP_WORKS.md** — plain-language tour of how this project's files fit
   together and what happens at runtime
+- **SETUP_FROM_SCRATCH.md** — how this project was built from an empty folder:
+  every command, every package, every config file explained line by line
 - **BUILD_A_FEATURE.md** — build a complete new page yourself, end to end, like a
   real work ticket
 - **GLOSSARY.md** — every confusing term explained in easy language

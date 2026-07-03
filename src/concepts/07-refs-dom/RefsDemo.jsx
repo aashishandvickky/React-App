@@ -33,6 +33,8 @@
    below (①, ②, …) matches one section on screen. Read NOTES.md in this
    folder for the theory. Confused by a word? → docs/GLOSSARY.md
    ═══════════════════════════════════════════════════════════════════════ */
+// useRef is the star here; useState provides the contrast (it DOES re-render); useEffect is
+// the safe moment to touch refs after render.
 import { useEffect, useRef, useState } from 'react';
 
 // ─── ① DomRefDemo — a ref to a real DOM node: focus, select, measure ───
@@ -43,13 +45,17 @@ function DomRefDemo() {
   // never during render.
   useEffect(() => {
     inputRef.current.focus(); // ≈ ngAfterViewInit focus
-  }, []);
+  }, []); // [] → run once, right after the first render (the node exists by then)
 
   return (
     <div className="card">
       <h3>DOM ref — focus, measure, scroll</h3>
+      {/* ref={inputRef} → after mount, inputRef.current IS this real DOM <input>. */}
       <input ref={inputRef} placeholder="auto-focused on mount" />
+      {/* Event handlers may read refs freely — by click time the node definitely exists. */}
       <button onClick={() => inputRef.current.select()}>Select text</button>
+      {/* getBoundingClientRect() is a plain browser API for size/position — a ref hands you
+          the real node, so anything the DOM can do is available. Template literal in alert. */}
       <button
         className="secondary"
         onClick={() => alert(`width: ${inputRef.current.getBoundingClientRect().width}px`)}
@@ -65,12 +71,16 @@ function RenderCounter() {
   const [text, setText] = useState('');
   // INTERVIEW FAVORITE: count renders WITHOUT causing renders.
   // useState here would loop forever; a plain variable resets each render.
-  const renders = useRef(0);
+  const renders = useRef(0); // the box survives re-renders; a plain `let` would reset to 0
+  // Mutate .current directly — refs have no setter. Interview: this does NOT re-render;
+  // the number on screen only updates because setText re-renders for its own reason.
   renders.current += 1;
 
   return (
     <div className="card">
       <h3>Mutable-value ref — render counter</h3>
+      {/* Controlled input: value={state} + onChange writing e.target.value back to state.
+          Every keystroke = one re-render — exactly what the counter counts. */}
       <input value={text} onChange={(e) => setText(e.target.value)} placeholder="type to re-render" />
       <p>
         This component has rendered <strong>{renders.current}</strong> time(s).
@@ -85,7 +95,7 @@ function RenderCounter() {
 // ─── ③ PreviousValueDemo — remember last render's value in a ref ───
 function PreviousValueDemo() {
   const [points, setPoints] = useState(1000);
-  const prev = useRef(undefined);
+  const prev = useRef(undefined); // a value box (not a DOM ref) — remembers across renders
 
   // After every commit, stash the current value; during render, prev.current
   // still holds the one from the PREVIOUS render. (This is how the old
@@ -94,6 +104,7 @@ function PreviousValueDemo() {
     prev.current = points;
   }, [points]);
 
+  // During render, prev.current still holds LAST render's points — the effect hasn't run yet.
   const diff = prev.current === undefined ? 0 : points - prev.current;
 
   return (
@@ -101,12 +112,14 @@ function PreviousValueDemo() {
       <h3>Previous value via ref</h3>
       <p>
         Points: <strong>{points}</strong>{' '}
+        {/* && hides the delta on the very first render; ternaries pick color and the "+". */}
         {diff !== 0 && (
           <span className={diff > 0 ? 'success' : 'error'}>
             ({diff > 0 ? '+' : ''}{diff} since last render)
           </span>
         )}
       </p>
+      {/* Updater form setPoints(p => …): compute the new value from the current one. */}
       <button onClick={() => setPoints((p) => p + 250)}>Earn 250</button>
       <button className="secondary" onClick={() => setPoints((p) => p - 100)}>Burn 100</button>
     </div>
@@ -116,6 +129,7 @@ function PreviousValueDemo() {
 // ─── ④ FancyInput — a child component that accepts a ref ───
 // Ref to a CUSTOM component: since React 19, ref is a normal prop.
 // (Before 19 you needed React.forwardRef — still worth knowing for interviews.)
+// The parameter { ref, label } destructures the props object right in the signature.
 function FancyInput({ ref, label }) {
   return (
     <p>
@@ -127,10 +141,11 @@ function FancyInput({ ref, label }) {
 
 // ─── ⑤ ForwardRefDemo — the parent focuses the child's input ───
 function ForwardRefDemo() {
-  const childInputRef = useRef(null);
+  const childInputRef = useRef(null); // will end up pointing at the CHILD's <input>
   return (
     <div className="card">
       <h3>Refs to custom components</h3>
+      {/* Pass the ref like any other prop; FancyInput attaches it to its <input> (see ④). */}
       <FancyInput ref={childInputRef} label="Child component's input" />
       <button onClick={() => childInputRef.current.focus()}>Focus child from parent</button>
       <p className="muted">

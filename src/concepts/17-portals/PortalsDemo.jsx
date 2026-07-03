@@ -36,21 +36,30 @@
    Use cases for portals: modals, tooltips, dropdowns, toasts — anything
    that must escape parent overflow/z-index/transform traps.
    ═══════════════════════════════════════════════════════════════════════ */
+// Hooks from react: effect (Escape listener), ref (DOM handle), state (open flag).
 import { useEffect, useRef, useState } from 'react';
+// createPortal lives in react-dom (the DOM renderer), not 'react' — it's DOM-specific.
 import { createPortal } from 'react-dom';
 
 // ─── ① Modal — reusable dialog rendered through createPortal ───
+// Props destructured in the signature; `children` = the JSX nested between
+// <Modal>…</Modal> tags (≈ ng-content). onClose is a callback prop (≈ @Output).
 function Modal({ title, onClose, children }) {
   // Close on Escape — a document-level listener with proper cleanup.
   useEffect(() => {
+    // Arrow function; `&&` short-circuits: only when the key is Escape does onClose() run.
     const onKey = (e) => e.key === 'Escape' && onClose();
     document.addEventListener('keydown', onKey);
+    // Cleanup runs when the modal unmounts → no leaked global listener (≈ ngOnDestroy).
     return () => document.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  }, [onClose]); // dependency: re-wire the listener if the onClose function changes
 
   // createPortal(jsx, domNode): the JSX mounts under document.body,
   // NOT under the clipped parent below.
+  // Interview: only the DOM location changes — the component keeps its place in the REACT
+  // tree, so context still flows in and synthetic events bubble to React parents as usual.
   return createPortal(
+    // 1st arg (the JSX): a fixed backdrop covering the viewport (inset: 0 = all four sides 0).
     <div
       onClick={onClose} // backdrop click closes
       style={{
@@ -65,13 +74,14 @@ function Modal({ title, onClose, children }) {
         <button onClick={onClose}>Close (or press Esc)</button>
       </div>
     </div>,
-    document.body
+    document.body // 2nd arg: the real DOM node the markup mounts into
   );
 }
 
 // ─── ② PortalsDemo — the page: clipped parent + open button + facts ───
 export default function PortalsDemo() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // is the modal currently shown?
+  // useRef holds the clipped card's real DOM node (≈ @ViewChild); attached via ref= below.
   const clippedBox = useRef(null);
 
   return (
@@ -87,6 +97,8 @@ export default function PortalsDemo() {
       >
         <h3>A clipped, overflow:hidden parent</h3>
         <button onClick={() => setOpen(true)}>Open modal (via portal)</button>
+        {/* Conditional mount (≈ *ngIf): the Modal only exists while `open` is true.
+            Its onClose prop just flips the state back to false. */}
         {open && (
           <Modal title="Rendered through a portal" onClose={() => setOpen(false)}>
             <p className="muted">

@@ -40,17 +40,22 @@
    Covers: the race condition every senior interview asks about, and
    dependent (waterfall vs parallel) requests.
    ═══════════════════════════════════════════════════════════════════════ */
+// Only two hooks needed — data fetching here is plain browser fetch() + useEffect
+// (no HttpClient service; the React part is just WHEN to run and how to clean up).
 import { useEffect, useState } from 'react';
 
 // ─── ① slowFetch — a fetch() with random delay ───
 // Simulated variable network latency so races are reproducible.
 function slowFetch(url, signal) {
-  const delay = 300 + Math.random() * 1200;
+  const delay = 300 + Math.random() * 1200; // 300–1500ms, different for every request
+  // Hand-built Promise: WE decide when it settles. resolve/reject are its two exit doors.
   return new Promise((resolve, reject) => {
+    // After the delay, run the real fetch; .then(resolve, reject) forwards its outcome.
     const t = setTimeout(() => fetch(url, { signal }).then(resolve, reject), delay);
+    // ?. (optional chaining): skip this line entirely when signal is undefined (fix OFF).
     signal?.addEventListener('abort', () => {
-      clearTimeout(t);
-      reject(new DOMException('aborted', 'AbortError'));
+      clearTimeout(t); // cancel the pending timer…
+      reject(new DOMException('aborted', 'AbortError')); // …and fail like a real aborted fetch
     });
   });
 }
@@ -63,34 +68,42 @@ function slowFetch(url, signal) {
  * Toggle the fix to see AbortController cancel stale requests.
  */
 function RaceConditionDemo() {
-  const [term, setTerm] = useState('');
-  const [results, setResults] = useState([]);
-  const [servedBy, setServedBy] = useState('');
-  const [fixEnabled, setFixEnabled] = useState(false);
+  const [term, setTerm] = useState('');           // what the user has typed
+  const [results, setResults] = useState([]);     // the list shown below the input
+  const [servedBy, setServedBy] = useState('');   // which request's response painted the UI
+  const [fixEnabled, setFixEnabled] = useState(false); // checkbox: abort stale requests?
 
+  // Runs after render whenever term or fixEnabled changed (the deps array at the bottom).
   useEffect(() => {
+    // Empty input: clear the UI and bail — no request, so no cleanup needed for this run.
     if (!term) {
       setResults([]);
       setServedBy('');
       return;
     }
+    // One fresh controller per request; controller.abort() cancels any fetch using its signal.
     const controller = new AbortController();
     // Only pass the signal when the fix is ON, so you can observe the bug.
     const signal = fixEnabled ? controller.signal : undefined;
 
+    // .then chaining instead of async/await — an effect callback can't be async itself.
+    // (No res.ok check here: static dev files can't 404; see catalogSlice.js for that pattern.)
     slowFetch('/data/search-index.json', signal)
-      .then((res) => res.json())
+      .then((res) => res.json()) // parse the JSON body — returns another Promise
       .then((index) => {
+        // Fake search: find an index key the term starts with; ?? null when nothing matches.
         const key = Object.keys(index).find((k) => term.toLowerCase().startsWith(k)) ?? null;
         setResults(key ? index[key] : []);
         setServedBy(term); // which request actually painted this UI?
       })
-      .catch(() => {});
+      .catch(() => {}); // swallow the AbortError thrown by cancelled requests
 
+    // CLEANUP runs before the effect re-runs (next keystroke) and on unmount — aborting the
+    // now-stale request. Interview: this is React's switchMap-style cancellation.
     return () => controller.abort(); // no-op for the buggy variant
   }, [term, fixEnabled]);
 
-  const stale = servedBy && servedBy !== term;
+  const stale = servedBy && servedBy !== term; // truthy when an OLD response painted the UI
 
   return (
     <div className="card">
@@ -123,12 +136,14 @@ function ParallelDemo() {
   const [data, setData] = useState(null);
   const [ms, setMs] = useState(null);
 
+  // async arrow function — allows await inside; both buttons call it with a flag.
   const load = async (parallel) => {
-    setData(null);
-    const t0 = performance.now();
-    let posts, index;
+    setData(null); // clear old results so the timing readout is honest
+    const t0 = performance.now(); // high-resolution timestamp (ms) to measure elapsed time
+    let posts, index; // declared up front so both branches below can assign them
     if (parallel) {
-      // ✅ Independent requests → fire together.
+      // ✅ Independent requests → fire together. Promise.all resolves to an ARRAY of results;
+      // array destructuring assigns [result0, result1] into the two variables.
       [posts, index] = await Promise.all([
         fetch('/data/posts.json').then((r) => r.json()),
         fetch('/data/search-index.json').then((r) => r.json()),

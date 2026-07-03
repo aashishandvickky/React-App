@@ -26,8 +26,9 @@ const walletSlice = createSlice({
     // ⚠️ This LOOKS like mutation — it isn't. RTK runs reducers inside
     // Immer, which records these "mutations" and produces a new immutable
     // state. Only inside createSlice/createReducer is this legal!
+    // (earned(state, action) {…} is shorthand for earned: function (state, action) {…}.)
     earned(state, action) {
-      state.points += action.payload;
+      state.points += action.payload; // action.payload = the value passed to earned(n)
       state.history.push({ type: 'earn', amount: action.payload });
     },
     redeemed(state, action) {
@@ -45,10 +46,14 @@ const walletSlice = createSlice({
 
 // createSlice generates matching action creators for free:
 // earned(100) → { type: 'wallet/earned', payload: 100 }
+// Object destructuring + named exports in one line — components import { earned } etc.
 export const { earned, redeemed, reset } = walletSlice.actions;
 
 // SELECTORS — keep state-shape knowledge here, not in components.
+// Interview: these return a stored primitive/reference, so useSelector's === check skips
+// re-renders. A selector that BUILDS a new object/array would re-render on every dispatch.
 export const selectPoints = (state) => state.wallet.points;
 export const selectHistory = (state) => state.wallet.history;
 
+// The reducer function itself — store.js mounts it at state.wallet.
 export default walletSlice.reducer;
